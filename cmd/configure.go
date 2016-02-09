@@ -58,6 +58,14 @@ func runConfigure(ctx *cli.Context) {
 	for _, cf := range coll {
 		cf.Update(env)
 	}
+
+	if env.RequiresMachine() {
+		fmt.Printf(`
+All set. You will also need to run the following commands:
+	eval $(docker-machine env %s)
+	source /etc/profile
+`, env.MachineName)
+	}
 }
 
 func promptQuestion(question string, def string) string {
