@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	vagabond_autoconfig_start = "#VAGABONDAUTOCONFIG"
-	vagabond_autoconfig_end   = "#VAGABONDAUTOCONFIGEND"
+	autoconfig_start = "#VAGABONDAUTOCONFIG"
+	autoconfig_end = "#VAGABONDAUTOCONFIGEND"
 )
 
 type ConfigFile struct {
@@ -39,13 +39,13 @@ func (cf ConfigFile) Update(env *Environment, force bool) {
 }
 
 func appendBlock(existing []byte, block []byte) (newblock []byte) {
-	re := regexp.MustCompile("(?s)" + vagabond_autoconfig_start + ".*" + vagabond_autoconfig_end)
+	re := regexp.MustCompile("(?s)" + autoconfig_start + ".*" + autoconfig_end)
 	newblock = re.ReplaceAll(existing, []byte(""))
 	newblock = bytes.TrimRight(newblock, "\n")
 
-	newblock = append(newblock, "\n"+vagabond_autoconfig_start+"\n"...)
+	newblock = append(newblock, "\n"+ autoconfig_start +"\n"...)
 	newblock = append(newblock, block...)
-	newblock = append(newblock, "\n"+vagabond_autoconfig_end+"\n"...)
+	newblock = append(newblock, "\n"+ autoconfig_end +"\n"...)
 	return
 }
 
