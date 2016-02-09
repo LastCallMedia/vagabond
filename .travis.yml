@@ -8,7 +8,7 @@ install:
   - go get github.com/mitchellh/gox
 
 script:
-  - gox --osarch="darwin/amd64"
+  - gox --osarch="darwin/amd64" -ldflags "-X main.Version=${TRAVIS_TAG}"
 
 deploy:
   provider: releases
