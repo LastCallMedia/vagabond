@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"runtime"
 )
 
 var CmdDiagnose = cli.Command{
@@ -18,6 +19,9 @@ var CmdDiagnose = cli.Command{
 func runDiagnose(ctx *cli.Context) {
 	fmt.Println("Running diagnostics...")
 
+	env := config.NewEnvironment()
+	env.Check()
+
 	err := runDockerInstallationCheck()
 	checkOrFatal(err, "Docker is not installed: %s")
 
@@ -25,10 +29,19 @@ func runDiagnose(ctx *cli.Context) {
 	checkOrFatal(err, "Docker-compose is not installed: %s")
 
 	err = runDockerConnectionCheck()
-	checkOrFatal(err, "Docker is unable to connect to the daemon: %s")
-
-	env := config.NewEnvironment()
-	env.Check()
+	if err != nil {
+		if runtime.GOOS == "darwin" {
+			// Requires machine.
+			machine := env.GetMachine()
+			if !machine.IsCreated() {
+				log.Fatal("Docker machine is not created.")
+			}
+			if !machine.IsBooted() {
+				log.Fatal("Docker machine is created but not booted.")
+			}
+		}
+		log.Fatalf("Docker is unable to connect to the daemon: %s", err)
+	}
 }
 
 func checkOrFatal(err error, msg string) {
