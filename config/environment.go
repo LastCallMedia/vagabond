@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"runtime"
 	"time"
@@ -19,13 +20,14 @@ type Environment struct {
 	SitesDir    string
 	DataDir     string
 	MachineName string
-	HostIp      string
-	MachineIp   string
+	HostIp      net.IP
+	MachineIp   net.IP
 	UsersDir    string
 }
 
 func NewEnvironment() *Environment {
-	var sitesDir, dataDir, tz, machineName, hostIp, machineIp string
+	var sitesDir, dataDir, tz, machineName string
+	var hostIp, machineIp net.IP
 
 	tz, set := os.LookupEnv("DOCKER_TZ")
 	if !set {

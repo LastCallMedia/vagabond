@@ -1,15 +1,15 @@
 package cmd
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
 	"github.com/LastCallMedia/vagabond/config"
 	"github.com/codegangsta/cli"
 	"log"
+	"net"
 	"os/exec"
 	"runtime"
-	"errors"
-	"bytes"
-	"net"
 )
 
 var DockerInstallHelp = `Download and install the docker toolbox from https://www.docker.com/products/docker-toolbox`
@@ -65,7 +65,7 @@ func checkInstall(env *config.Environment) (err error) {
 	return
 }
 
-func checkConnection(env *config.Environment) (error) {
+func checkConnection(env *config.Environment) error {
 	err := exec.Command("docker", "info").Run()
 	if err != nil {
 		if runtime.GOOS == "darwin" {
@@ -102,14 +102,24 @@ func checkContainers(env *config.Environment) error {
 }
 
 func checkDns(env *config.Environment) error {
-	addrs, err := net.LookupHost("somehost.docker")
+	addrs, err := net.LookupIP("somehost.docker")
 	if err != nil {
 		return errors.New("Unable to resolve somehost.docker. Run configure to fix DNS settings.")
 	}
-	if addrs[0] != env.MachineIp {
+
+	if !ipSliceContains(addrs, env.MachineIp) {
 		return errors.New("somehost.docker resolves to the wrong host. Run configure to fix DNS settings.")
 	}
 	return err
+}
+
+func ipSliceContains(ips []net.IP, ip net.IP) bool {
+	for _, v := range ips {
+		if v.String() == ip.String() {
+			return true
+		}
+	}
+	return false
 }
 
 func helpConnectingToDaemon(env *config.Environment) string {

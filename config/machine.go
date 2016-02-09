@@ -1,6 +1,7 @@
 package config
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"net"
@@ -23,7 +24,7 @@ func (m *Machine) IsCreated() bool {
 
 func (m *Machine) IsBooted() bool {
 	out, err := exec.Command("docker-machine", "status", m.Name).Output()
-	return err == nil && strings.TrimSpace(string(out)) == "Running"
+	return err == nil && bytes.Contains(out, []byte("Running"))
 }
 
 func (m *Machine) BootOrDie() (err error) {
@@ -62,15 +63,17 @@ func (m *Machine) Boot() *exec.Cmd {
 	return exec.Command("docker-machine", "start", m.Name)
 }
 
-func (m *Machine) GetIp() string {
+func (m *Machine) GetIp() net.IP {
 	out, err := exec.Command("docker-machine", "ip", m.Name).Output()
 	if err != nil {
 		log.Fatal(err)
 	}
-	return strings.TrimSpace(string(out))
+
+	out = bytes.TrimSpace(out)
+	return net.ParseIP(string(out))
 }
 
-func (m *Machine) GetHostIp() string {
+func (m *Machine) GetHostIp() net.IP {
 	out, err := exec.Command("docker-machine", "inspect", m.Name, "-f", "{{.Driver.HostOnlyCIDR}}").Output()
 	if err != nil {
 		log.Fatal(err)
@@ -78,5 +81,5 @@ func (m *Machine) GetHostIp() string {
 	hostCidr := strings.TrimSpace(string(out))
 	ip, _, _ := net.ParseCIDR(hostCidr)
 
-	return ip.String()
+	return ip
 }
