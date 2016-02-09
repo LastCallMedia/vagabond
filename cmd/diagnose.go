@@ -17,7 +17,7 @@ var DockerComposeInstallHelp = DockerInstallHelp
 
 var CmdDiagnose = cli.Command{
 	Name:   "diagnose",
-	Usage: "Run diagnostic tests on the environment",
+	Usage:  "Run diagnostic tests on the environment",
 	Action: runDiagnose,
 }
 

@@ -11,7 +11,7 @@ import (
 
 const (
 	autoconfig_start = "#VAGABONDAUTOCONFIG"
-	autoconfig_end = "#VAGABONDAUTOCONFIGEND"
+	autoconfig_end   = "#VAGABONDAUTOCONFIGEND"
 )
 
 type ConfigFile struct {
@@ -43,9 +43,9 @@ func appendBlock(existing []byte, block []byte) (newblock []byte) {
 	newblock = re.ReplaceAll(existing, []byte(""))
 	newblock = bytes.TrimRight(newblock, "\n")
 
-	newblock = append(newblock, "\n"+ autoconfig_start +"\n"...)
+	newblock = append(newblock, "\n"+autoconfig_start+"\n"...)
 	newblock = append(newblock, block...)
-	newblock = append(newblock, "\n"+ autoconfig_end +"\n"...)
+	newblock = append(newblock, "\n"+autoconfig_end+"\n"...)
 	return
 }
 

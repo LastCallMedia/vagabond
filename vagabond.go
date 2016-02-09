@@ -17,6 +17,7 @@ func main() {
 	app.Commands = []cli.Command{
 		cmd.CmdSetup,
 		cmd.CmdDiagnose,
+		cmd.CmdSelfUpdate,
 	}
 	app.Run(os.Args)
 }

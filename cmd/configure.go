@@ -11,13 +11,13 @@ import (
 )
 
 var CmdSetup = cli.Command{
-	Name:   "setup",
-	Usage: "Prepare the environment for use",
+	Name:        "setup",
+	Usage:       "Prepare the environment for use",
 	Description: "Prepare the environment for the first use",
-	Action: runSetup,
-	Flags: []cli.Flag {
-		cli.BoolFlag {
-			Name: "force",
+	Action:      runSetup,
+	Flags: []cli.Flag{
+		cli.BoolFlag{
+			Name:  "force",
 			Usage: "Force the configuration actions",
 		},
 	},
