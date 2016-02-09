@@ -10,9 +10,11 @@ import (
 	"strings"
 )
 
-var CmdConfigure = cli.Command{
-	Name:   "configure",
-	Action: runConfigure,
+var CmdSetup = cli.Command{
+	Name:   "setup",
+	Usage: "Prepare the environment for use",
+	Description: "Prepare the environment for the first use",
+	Action: runSetup,
 	Flags: []cli.Flag {
 		cli.BoolFlag {
 			Name: "force",
@@ -21,7 +23,7 @@ var CmdConfigure = cli.Command{
 	},
 }
 
-func runConfigure(ctx *cli.Context) {
+func runSetup(ctx *cli.Context) {
 	env := config.NewEnvironment()
 
 	if env.RequiresMachine() {

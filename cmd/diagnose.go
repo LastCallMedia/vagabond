@@ -17,6 +17,7 @@ var DockerComposeInstallHelp = DockerInstallHelp
 
 var CmdDiagnose = cli.Command{
 	Name:   "diagnose",
+	Usage: "Run diagnostic tests on the environment",
 	Action: runDiagnose,
 }
 
@@ -71,10 +72,10 @@ func checkConnection(env *config.Environment) error {
 		if runtime.GOOS == "darwin" {
 			machine := env.GetMachine()
 			if !machine.IsCreated() {
-				return errors.New("Docker machine is not created. Run configure to create the machine.")
+				return errors.New("Docker machine is not created. Run setup to create the machine.")
 			}
 			if !machine.IsBooted() {
-				return errors.New("Docker machine is created but not booted. Run configure to boot the machine.")
+				return errors.New("Docker machine is created but not booted. Run setup to boot the machine.")
 			}
 		}
 		return errors.New("Unable to connect to docker daemon. " + helpConnectingToDaemon(env))
@@ -86,17 +87,17 @@ func checkContainers(env *config.Environment) error {
 	running := []byte("running")
 	out, err := exec.Command("docker", "inspect", "-f", "{{.State.Status}}", "vagabond_dnsmasq").Output()
 	if err != nil {
-		return errors.New("Problem inspecting DNSMasq container. Run configure to restart it.")
+		return errors.New("Problem inspecting DNSMasq container. Run setup to restart it.")
 	}
 	if !bytes.Contains(out, running) {
-		return errors.New("dnsmasq container is not running.  Run configure to restart it.")
+		return errors.New("dnsmasq container is not running.  Run setup to restart it.")
 	}
 	out, err = exec.Command("docker", "inspect", "-f", "{{.State.Status}}", "vagabond_proxy").Output()
 	if err != nil {
-		return errors.New("Unable to find proxy container. Run configure to start it.")
+		return errors.New("Unable to find proxy container. Run setup to start it.")
 	}
 	if !bytes.Contains(out, running) {
-		return errors.New("Proxy container is not running. Run configure to restart it.")
+		return errors.New("Proxy container is not running. Run setup to restart it.")
 	}
 	return err
 }
@@ -104,11 +105,11 @@ func checkContainers(env *config.Environment) error {
 func checkDns(env *config.Environment) error {
 	addrs, err := net.LookupIP("somehost.docker")
 	if err != nil {
-		return errors.New("Unable to resolve somehost.docker. Run configure to fix DNS settings.")
+		return errors.New("Unable to resolve somehost.docker. Run setup to fix DNS settings.")
 	}
 
 	if !ipSliceContains(addrs, env.MachineIp) {
-		return errors.New("somehost.docker resolves to the wrong host. Run configure to fix DNS settings.")
+		return errors.New("somehost.docker resolves to the wrong host. Run setup to fix DNS settings.")
 	}
 	return err
 }
