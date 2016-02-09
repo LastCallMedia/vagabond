@@ -8,13 +8,15 @@ install:
   - go get github.com/mitchellh/gox
 
 script:
-  - gox --osarch="darwin/amd64"
+  - gox
 
 deploy:
   provider: releases
   api_key:
     secure: EledDXbXjYmizoXMhcju2O+gIi9O/z1Qaw0jSgF6637Enk9grzWWPlA6FXCnInBExON3xaoQeKWXkwlGaorAlqq9SDOBxGkY6grWw1rvv3gqGJvXB5uli3vwwSE5SVGWSkbcYY8ggf8gLbdViLOkVYY4wRuM6ZYEmeeHGtaJCLshpFFwXAk23XoL14FxN6bzvkoSNJHC0VibZyEqBrqGVDWV5e+usQPHE0RSSVO+rgASB24zai4BXO2kxkwQqtPCX3iOhCFBhP/SvHFFS/mi7WK0xJEYM3qT3Llg6+BUGGfop/2fomA8ZAUBIUys2e8Lnzf3TJAQp7FoiZu0LVNjszIvorFfGTcuLuzJKS5A8CBl0DT1GE9ot8flQnHZZDz1XjF9o8TsnPol+AMEUdW4qDZJ0Sml3o1QtIo49/k7ZPgV6i/VyIFqSD1jxEQyOJIlKuM1WQYYE81iviRNIz/3vjQuL+nkvCLUj0PaTRBgCF93anBp2TknJk0pWHUEXom47Tz1NQb4sadd50zw2W2x7AoyLupXE3qbAvNeeu7QrZndAB7o+Hg41sSKqs6QmZ72GZU3Ycl25a1iCkiYtd4K1WN5KdrLhVYkx3JkWUwUQpXPzDXd8piKswQLk0w0Yjkti6o1UmjaYCarMElySsrFQtxfbfUSMdGnTHKs94Kwt3A=
-  file: vagabond_darwin_amd64
+  file:
+    - vagabond_darwin_amd64
+    - vagabond_darwin_386
   on:
     tags: true
 
