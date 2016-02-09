@@ -22,7 +22,7 @@ type ConfigFile struct {
 	Flush     func(env *Environment, filename string)
 }
 
-func (cf ConfigFile) Update(env *Environment) {
+func (cf ConfigFile) Update(env *Environment, force bool) {
 	existing := cf.Io.Read(env, cf.Filename)
 	block := cf.Generator.Generate(env)
 
@@ -30,7 +30,7 @@ func (cf ConfigFile) Update(env *Environment) {
 		block = appendBlock(existing, block)
 	}
 
-	if md5.Sum(existing) != md5.Sum(block) {
+	if md5.Sum(existing) != md5.Sum(block) || force {
 		log.Println("Updating " + cf.Filename)
 		cf.Io.Write(env, cf.Filename, block)
 		// Run any post-update actions.

@@ -13,6 +13,12 @@ import (
 var CmdConfigure = cli.Command{
 	Name:   "configure",
 	Action: runConfigure,
+	Flags: []cli.Flag {
+		cli.BoolFlag {
+			Name: "force",
+			Usage: "Force the configuration actions",
+		},
+	},
 }
 
 func runConfigure(ctx *cli.Context) {
@@ -44,7 +50,7 @@ func runConfigure(ctx *cli.Context) {
 	}
 
 	for _, cf := range coll {
-		cf.Update(env)
+		cf.Update(env, ctx.Bool("force"))
 	}
 
 	if env.RequiresMachine() {
