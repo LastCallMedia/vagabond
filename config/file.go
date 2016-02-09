@@ -101,7 +101,7 @@ sudo umount /Users
 		docker stop vagabond_proxy vagabond_dnsmasq
 		docker rm vagabond_proxy vagabond_dnsmasq
 		docker run --name vagabond_proxy   -d -p 80:80 -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy
-		docker run --name vagabond_dnsmasq -d -p 53:53/udp -p 53:53/tcp --cap-add NET_ADMIN andyshinn/dnsmasq --address=/docker/192.168.99.101
+		docker run --name vagabond_dnsmasq -d -p 53:53/udp -p 53:53/tcp --cap-add NET_ADMIN andyshinn/dnsmasq --address=/docker/{{.MachineIp}}
 		`,
 	},
 	Flush: func(env *Environment, filename string) {
