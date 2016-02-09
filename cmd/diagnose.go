@@ -1,15 +1,17 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"github.com/LastCallMedia/vagabond/config"
 	"github.com/codegangsta/cli"
 	"log"
-	"os"
 	"os/exec"
 	"runtime"
+	"errors"
 )
+
+var DockerInstallHelp = `Download and install the docker toolbox from https://www.docker.com/products/docker-toolbox`
+var DockerComposeInstallHelp = DockerInstallHelp
 
 var CmdDiagnose = cli.Command{
 	Name:   "diagnose",
@@ -22,61 +24,42 @@ func runDiagnose(ctx *cli.Context) {
 	env := config.NewEnvironment()
 	env.Check()
 
-	err := runDockerInstallationCheck()
-	checkOrFatal(err, "Docker is not installed: %s")
+	err := checkInstall(env)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	err = runDockerComposeInstallationCheck()
-	checkOrFatal(err, "Docker-compose is not installed: %s")
+	err = checkConnection(env)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
-	err = runDockerConnectionCheck()
+func checkInstall(env *config.Environment) (err error) {
+	err = exec.Command("which", "docker").Run()
+	if err != nil {
+		return errors.New("docker is not installed. " + DockerInstallHelp)
+	}
+	err = exec.Command("which", "docker-compose").Run()
+	if err != nil {
+		return errors.New("docker-compose is not installed. " + DockerComposeInstallHelp)
+	}
+	return
+}
+
+func checkConnection(env *config.Environment) (err error) {
+	err = exec.Command("docker", "info").Run()
 	if err != nil {
 		if runtime.GOOS == "darwin" {
-			// Requires machine.
 			machine := env.GetMachine()
 			if !machine.IsCreated() {
-				log.Fatal("Docker machine is not created.")
+				return errors.New("Docker machine is not created. Run configure to create the machine.")
 			}
 			if !machine.IsBooted() {
-				log.Fatal("Docker machine is created but not booted.")
+				return errors.New("Docker machine is created but not booted. Run configure to boot the machine.")
 			}
 		}
-		log.Fatalf("Docker is unable to connect to the daemon: %s", err)
+		return errors.New("Docker daemon is not running.")
 	}
-}
-
-func checkOrFatal(err error, msg string) {
-	if err != nil {
-		log.Fatal(fmt.Sprintf(msg, err))
-	}
-}
-
-func runDockerInstallationCheck() (err error) {
-	cmd := exec.Command("which", "docker")
-	return cmd.Run()
-}
-
-func runDockerComposeInstallationCheck() (err error) {
-	cmd := exec.Command("which", "docker-compose")
-	return cmd.Run()
-}
-
-func runDockerConnectionCheck() (err error) {
-	cmd := exec.Command("docker", "info")
-	return cmd.Run()
-}
-
-func runEnvCheck() (err error) {
-	envvar := os.Getenv("DOCKER_SITES_DIR")
-	if "" == envvar {
-		err = errors.New("$DOCKER_SITES_DIR is not defined")
-		return err
-	}
-
-	envvar = os.Getenv("DOCKER_TZ")
-	if "" == envvar {
-		err = errors.New("$DOCKER_TZ is not defined")
-		return err
-	}
-
-	return err
+	return
 }
