@@ -5,9 +5,10 @@ go:
 
 install:
   - go get github.com/codegangsta/cli
+  - go get github.com/mitchellh/gox
 
 script:
-  - go build
+  - gox --osarch="darwin/amd64"
 
 deploy:
   provider: releases
