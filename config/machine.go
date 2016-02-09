@@ -26,6 +26,22 @@ func (m *Machine) IsBooted() bool {
 	return err == nil && strings.TrimSpace(string(out)) == "Running"
 }
 
+func (m *Machine) BootOrDie() (err error) {
+	if !m.IsCreated() {
+		_, err = m.Create().Output()
+		if err != nil {
+			return
+		}
+	}
+	if !m.IsBooted() {
+		_, err = m.Boot().Output()
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
 func (m *Machine) Exec(cmd string) *exec.Cmd {
 	return exec.Command("docker-machine", "ssh", m.Name, cmd)
 }

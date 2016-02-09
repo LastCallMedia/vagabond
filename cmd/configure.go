@@ -19,25 +19,12 @@ func runConfigure(ctx *cli.Context) {
 	env := config.NewEnvironment()
 
 	if env.RequiresMachine() {
-		machine := env.GetMachine()
-		if !machine.IsCreated() {
-			log.Println("Creating the machine...")
-			_, err := machine.Create().Output()
-			if err != nil {
-				log.Fatal("Error creating machine: ", err)
-			}
-			// Reset the environment
-			env = config.NewEnvironment()
+		err := env.GetMachine().BootOrDie()
+		if err != nil {
+			log.Fatalf("Unable to boot machine: %s", err)
 		}
-		if !machine.IsBooted() {
-			log.Println("Booting the machine...")
-			_, err := machine.Boot().Output()
-			if err != nil {
-				log.Fatal("Error booting machine: ", err)
-			}
-			// Reset the environment
-			env = config.NewEnvironment()
-		}
+		// Reset the environment
+		env = config.NewEnvironment()
 	}
 
 	env.SitesDir = promptQuestion("Enter the sites directory", env.SitesDir)
@@ -65,6 +52,24 @@ All set. You will also need to run the following commands:
 	eval $(docker-machine env %s)
 	source /etc/profile
 `, env.MachineName)
+	}
+}
+
+func requireBootedMachine(env *config.Environment) {
+	machine := env.GetMachine()
+	if !machine.IsCreated() {
+		log.Println("Creating the machine...")
+		_, err := machine.Create().Output()
+		if err != nil {
+			log.Fatal("Error creating machine: ", err)
+		}
+	}
+	if !machine.IsBooted() {
+		log.Println("Booting the machine...")
+		_, err := machine.Boot().Output()
+		if err != nil {
+			log.Fatal("Error booting machine: ", err)
+		}
 	}
 }
 
