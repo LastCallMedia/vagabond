@@ -19,6 +19,7 @@ func main() {
 		cmd.CmdDiagnose,
 		cmd.CmdSelfUpdate,
 
+		// Simple wrapper commands:
 		cmd.CmdUp,
 		cmd.CmdDestroy,
 		cmd.CmdHalt,

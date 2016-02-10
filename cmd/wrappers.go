@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/codegangsta/cli"
 	"os"
@@ -42,14 +43,16 @@ var CmdSsh = cli.Command{
 	Name:  "ssh",
 	Usage: "Shell into a running docker container",
 	Action: func(ctx *cli.Context) {
-		args := []string{"docker", "exec", "-it"}
-		for _, i := range ctx.Args() {
-			args = append(args, fmt.Sprintf("$(docker-compose ps -q %s)", i))
+		name := ctx.Args()[0]
+		contid, err := exec.Command("docker-compose", "ps", "-q", name).Output()
+		contid = bytes.TrimSpace(contid)
+		if err != nil || bytes.Equal(contid, []byte("")) {
+			fmt.Printf("Could not find container %s.  Are you sure it's running?\n", name)
+			os.Exit(1)
 		}
-		args = append(args, "/bin/bash")
 
-		fmt.Printf("running: %s\n", sliceToString(args))
-		cmd := exec.Command("bash", "-c", sliceToString(args))
+		fmt.Printf("running: docker exec -it $(docker-compose ps -q %s) /bin/bash \n", name)
+		cmd := exec.Command("docker", "exec", "-it", string(contid), "/bin/bash")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		cmd.Stdin = os.Stdin
