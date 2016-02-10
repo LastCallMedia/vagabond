@@ -18,6 +18,11 @@ func main() {
 		cmd.CmdSetup,
 		cmd.CmdDiagnose,
 		cmd.CmdSelfUpdate,
+
+		cmd.CmdUp,
+		cmd.CmdDestroy,
+		cmd.CmdHalt,
+		cmd.CmdSsh,
 	}
 	app.Run(os.Args)
 }

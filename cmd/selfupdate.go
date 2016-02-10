@@ -8,8 +8,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"runtime"
 	"path/filepath"
+	"runtime"
 )
 
 const UpdateUrl = "https://api.github.com/repos/LastCallMedia/vagabond/releases"
@@ -26,7 +26,7 @@ func runSelfUpdate(ctx *cli.Context) {
 		log.Fatalf("Unable to fetch release data")
 	}
 	filename := "vagabond_" + runtime.GOOS + "_" + runtime.GOARCH
-	asset, found := searchAssets(release.Assets, filename)
+	asset, found := assetSearch(release.Assets, filename)
 	if !found {
 		log.Fatal("Unable to find a release asset for this OS and architecture")
 	}
@@ -54,7 +54,7 @@ func getRelease(version string) (release *github.RepositoryRelease, err error) {
 	return
 }
 
-func searchAssets(assets []github.ReleaseAsset, filename string) (asset github.ReleaseAsset, found bool) {
+func assetSearch(assets []github.ReleaseAsset, filename string) (asset github.ReleaseAsset, found bool) {
 	found = false
 	for _, potentialAsset := range assets {
 		if *potentialAsset.Name == filename {
