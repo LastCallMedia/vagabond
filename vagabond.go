@@ -23,6 +23,7 @@ func main() {
 		cmd.CmdUp,
 		cmd.CmdDestroy,
 		cmd.CmdHalt,
+		cmd.CmdStatus,
 		cmd.CmdSsh,
 	}
 	app.Run(os.Args)
