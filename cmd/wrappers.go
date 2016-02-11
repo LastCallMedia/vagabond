@@ -3,13 +3,14 @@ package cmd
 import (
 	"bytes"
 	"fmt"
+	"github.com/LastCallMedia/vagabond/config"
 	"github.com/LastCallMedia/vagabond/util"
 	"github.com/codegangsta/cli"
 	"os"
 	"os/exec"
-	"github.com/LastCallMedia/vagabond/config"
 )
 
+// Proxies a docker-compose up command.
 var CmdUp = cli.Command{
 	Name:  "up",
 	Usage: "Start one or more docker containers",
@@ -18,6 +19,7 @@ var CmdUp = cli.Command{
 	},
 }
 
+// Proxies a docker-compose rm command.
 var CmdDestroy = cli.Command{
 	Name:            "destroy",
 	Aliases:         []string{"rm"},
@@ -28,6 +30,7 @@ var CmdDestroy = cli.Command{
 	},
 }
 
+// Proxies a docker-compose stop command.
 var CmdHalt = cli.Command{
 	Name:    "halt",
 	Aliases: []string{"stop"},
@@ -37,6 +40,7 @@ var CmdHalt = cli.Command{
 	},
 }
 
+// Proxies a docker-compose ps command.
 var CmdStatus = cli.Command{
 	Name:    "status",
 	Aliases: []string{"ps"},
@@ -46,8 +50,9 @@ var CmdStatus = cli.Command{
 	},
 }
 
+// Proxies a docker-machine ip command.
 var CmdIp = cli.Command{
-	Name: "ip",
+	Name:  "ip",
 	Usage: "View the IP Address of the docker machine",
 	Action: func(ctx *cli.Context) {
 		env := config.NewEnvironment()
@@ -55,6 +60,7 @@ var CmdIp = cli.Command{
 	},
 }
 
+// Emulates vagrant ssh with docker exec
 var CmdSsh = cli.Command{
 	Name:    "ssh",
 	Aliases: []string{"exec"},
@@ -88,12 +94,6 @@ func sliceToString(slice []string) string {
 		parts += fmt.Sprintf(" %s", i)
 	}
 	return parts
-}
-
-func runSimpleComposeCommand(name string, arg ...string) {
-	arg = append([]string{name}, arg...)
-	notifyCommand("docker-compose", arg...)
-	pipeCommand("docker-compose", arg...)
 }
 
 func runAndNotifyCommand(name string, arg ...string) {

@@ -12,8 +12,11 @@ import (
 	"runtime"
 )
 
+// The url to fetch releases from
 const UpdateUrl = "https://api.github.com/repos/LastCallMedia/vagabond/releases"
 
+// Replaces the running binary with a new version fetched from
+// github
 var CmdSelfUpdate = cli.Command{
 	Name:   "self-update",
 	Usage:  "Check for a new version of this tool",

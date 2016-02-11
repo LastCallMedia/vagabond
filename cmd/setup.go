@@ -10,6 +10,7 @@ import (
 	"strings"
 )
 
+// Sets up the vagabond environment
 var CmdSetup = cli.Command{
 	Name:        "setup",
 	Usage:       "Prepare the environment for use",

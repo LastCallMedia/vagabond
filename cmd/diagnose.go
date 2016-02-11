@@ -12,9 +12,13 @@ import (
 	"runtime"
 )
 
+// Help message for installing Docker
 var DockerInstallHelp = `Download and install the docker toolbox from https://www.docker.com/products/docker-toolbox`
+
+// Help message for installing Docker compose
 var DockerComposeInstallHelp = DockerInstallHelp
 
+// Tests whether setup is completed properly
 var CmdDiagnose = cli.Command{
 	Name:   "diagnose",
 	Usage:  "Run diagnostic tests on the environment",

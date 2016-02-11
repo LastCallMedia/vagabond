@@ -15,6 +15,7 @@ const (
 	vagabond_machine_name string = "vagabond"
 )
 
+// Representation of the vagabond environment settings.
 type Environment struct {
 	Tz          string
 	SitesDir    string
@@ -25,6 +26,7 @@ type Environment struct {
 	UsersDir    string
 }
 
+// Create and prepopulate a new environment based on settings
 func NewEnvironment() *Environment {
 	var sitesDir, dataDir, tz, machineName string
 	var hostIp, machineIp net.IP
@@ -68,6 +70,7 @@ func NewEnvironment() *Environment {
 	}
 }
 
+// Verify that environment variables are set properly
 func (e *Environment) Check() {
 	_, err := time.LoadLocation(e.Tz)
 	if err != nil {
@@ -87,10 +90,12 @@ func checkDir(dir string, name string) {
 	}
 }
 
+// Assert whether the environment requires docker machine to run
 func (e *Environment) RequiresMachine() bool {
 	return runtime.GOOS == "darwin"
 }
 
+// Get the docker machine instance for the environment.
 func (e *Environment) GetMachine() *Machine {
 	return &Machine{Name: e.MachineName}
 }
