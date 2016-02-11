@@ -130,3 +130,19 @@ var ResolverConfigFile = ConfigFile{
 		// No-op
 	},
 }
+
+var DhclientConfigFile = ConfigFile{
+	Filename: "/etc/dhcp/dhclient.conf",
+	Io: ConfigFileLocalIo{},
+	Append:   true,
+	Generator: Generator{
+		TemplateName:"dhconfigfile",
+		Template: "nameserver {{.MachineIp}};",
+	},
+	Flush: func(env *Environment, filename string) {
+		_, err  :=exec.Command("sudo", "dhclient", "-r").Output()
+		if err != nil {
+			log.Fatal("Unable to restart dhcp")
+		}
+	},
+}

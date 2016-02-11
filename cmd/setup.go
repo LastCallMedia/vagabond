@@ -45,11 +45,15 @@ func runSetup(ctx *cli.Context) {
 
 	coll := []config.ConfigFile{}
 	coll = append(coll, config.ProfileConfigFile)
-	coll = append(coll, config.ResolverConfigFile)
 
 	if env.RequiresMachine() {
 		coll = append(coll, config.NfsExportsConfigFile)
 		coll = append(coll, config.BootLocalConfigFile)
+		// On osx, use resolver files
+		coll = append(coll, config.ResolverConfigFile)
+	} else {
+		// On linux, use dhclient
+		coll = append(coll, config.DhclientConfigFile)
 	}
 
 	for _, cf := range coll {
