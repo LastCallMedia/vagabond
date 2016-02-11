@@ -14,6 +14,13 @@ func main() {
 	app.Name = "Vagabond"
 	app.Usage = "Development environment helper"
 	app.Version = Version
+	app.Authors = []cli.Author{
+		cli.Author{
+			Name: "Rob Bayliss",
+			Email: "rob@lastcallmedia.com",
+		},
+	}
+	app.Copyright = "MIT"
 	app.Commands = []cli.Command{
 		cmd.CmdSetup,
 		cmd.CmdDiagnose,
