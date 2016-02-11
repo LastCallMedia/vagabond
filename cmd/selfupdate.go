@@ -21,7 +21,11 @@ var CmdSelfUpdate = cli.Command{
 }
 
 func runSelfUpdate(ctx *cli.Context) {
-	release, err := getRelease("latest")
+	version := "latest"
+	if len(ctx.Args()) > 0 {
+		version = ctx.Args()[0]
+	}
+	release, err := getRelease(version)
 	if err != nil {
 		util.Fatal("Unable to fetch release data")
 	}
@@ -47,7 +51,11 @@ func runSelfUpdate(ctx *cli.Context) {
 
 func getRelease(version string) (release *github.RepositoryRelease, err error) {
 	client := github.NewClient(nil)
-	release, _, err = client.Repositories.GetLatestRelease("LastCallMedia", "vagabond")
+	if version == "latest" {
+		release, _, err = client.Repositories.GetLatestRelease("LastCallMedia", "vagabond")
+	} else {
+		release, _, err = client.Repositories.GetReleaseByTag("LastCallMedia", "vagabond", version)
+	}
 
 	return
 }
