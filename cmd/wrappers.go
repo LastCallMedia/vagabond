@@ -7,14 +7,14 @@ import (
 	"github.com/codegangsta/cli"
 	"os"
 	"os/exec"
+	"github.com/LastCallMedia/vagabond/config"
 )
 
 var CmdUp = cli.Command{
 	Name:  "up",
 	Usage: "Start one or more docker containers",
 	Action: func(ctx *cli.Context) {
-		args := append([]string{"-d"}, ctx.Args()...)
-		runSimpleComposeCommand("up", args...)
+		runAndNotifyCommand("docker-compose", append([]string{"up", "-d"}, ctx.Args()...)...)
 	},
 }
 
@@ -24,7 +24,7 @@ var CmdDestroy = cli.Command{
 	Usage:           "Remove one or more docker containers",
 	SkipFlagParsing: true,
 	Action: func(ctx *cli.Context) {
-		runSimpleComposeCommand("rm", ctx.Args()...)
+		runAndNotifyCommand("docker-compose", append([]string{"rm"}, ctx.Args()...)...)
 	},
 }
 
@@ -33,7 +33,7 @@ var CmdHalt = cli.Command{
 	Aliases: []string{"stop"},
 	Usage:   "Stop one or more docker containers",
 	Action: func(ctx *cli.Context) {
-		runSimpleComposeCommand("stop", ctx.Args()...)
+		runAndNotifyCommand("docker-compose", append([]string{"stop"}, ctx.Args()...)...)
 	},
 }
 
@@ -42,7 +42,16 @@ var CmdStatus = cli.Command{
 	Aliases: []string{"ps"},
 	Usage:   "View the status of running containers",
 	Action: func(ctx *cli.Context) {
-		runSimpleComposeCommand("ps", ctx.Args()...)
+		runAndNotifyCommand("docker-compose", append([]string{"ps"}, ctx.Args()...)...)
+	},
+}
+
+var CmdIp = cli.Command{
+	Name: "ip",
+	Usage: "View the IP Address of the docker machine",
+	Action: func(ctx *cli.Context) {
+		env := config.NewEnvironment()
+		runAndNotifyCommand("docker-machine", "ip", env.MachineName)
 	},
 }
 
@@ -85,6 +94,11 @@ func runSimpleComposeCommand(name string, arg ...string) {
 	arg = append([]string{name}, arg...)
 	notifyCommand("docker-compose", arg...)
 	pipeCommand("docker-compose", arg...)
+}
+
+func runAndNotifyCommand(name string, arg ...string) {
+	notifyCommand(name, arg...)
+	pipeCommand(name, arg...)
 }
 
 func pipeCommand(name string, arg ...string) error {

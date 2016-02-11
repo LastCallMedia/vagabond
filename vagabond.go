@@ -25,6 +25,7 @@ func main() {
 		cmd.CmdHalt,
 		cmd.CmdStatus,
 		cmd.CmdSsh,
+		cmd.CmdIp,
 	}
 	app.Run(os.Args)
 }
