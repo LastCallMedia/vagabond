@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"github.com/LastCallMedia/vagabond/config"
 	"github.com/codegangsta/cli"
-	"log"
 	"net"
 	"os/exec"
 	"runtime"
+	"github.com/LastCallMedia/vagabond/util"
 )
 
 var DockerInstallHelp = `Download and install the docker toolbox from https://www.docker.com/products/docker-toolbox`
@@ -29,23 +29,23 @@ func runDiagnose(ctx *cli.Context) {
 
 	err := checkInstall(env)
 	if err != nil {
-		log.Fatal(err)
+		util.Fatal(err)
 	}
 
 	err = checkConnection(env)
 	if err != nil {
-		log.Fatal(err)
+		util.Fatal(err)
 	}
 	err = checkContainers(env)
 	if err != nil {
-		log.Fatal(err)
+		util.Fatal(err)
 	}
 	err = checkDns(env)
 	if err != nil {
-		log.Fatal(err)
+		util.Fatal(err)
 	}
 
-	fmt.Println("OK - No issues found")
+	util.Success("OK - No issues found")
 }
 
 func checkInstall(env *config.Environment) (err error) {

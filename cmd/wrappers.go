@@ -6,26 +6,7 @@ import (
 	"github.com/codegangsta/cli"
 	"os"
 	"os/exec"
-)
-
-const(
-	// Courtesy of https://groups.google.com/forum/#!topic/golang-nuts/99MKtEkvQ2c
-	Reset = "\x1b[0m"
-	Bright = "\x1b[1m"
-	Dim = "\x1b[2m"
-	Underscore = "\x1b[4m"
-	Blink = "\x1b[5m"
-	Reverse = "\x1b[7m"
-	Hidden = "\x1b[8m"
-
-	FgBlack = "\x1b[30m"
-	FgRed = "\x1b[31m"
-	FgGreen = "\x1b[32m"
-	FgYellow = "\x1b[33m"
-	FgBlue = "\x1b[34m"
-	FgMagenta = "\x1b[35m"
-	FgCyan = "\x1b[36m"
-	FgWhite = "\x1b[37m"
+	"github.com/LastCallMedia/vagabond/util"
 )
 
 var CmdUp = cli.Command{
@@ -117,9 +98,9 @@ func pipeCommand(name string, arg ...string) error {
 
 func notifyCommand(name string, arg ...string) {
 	parts := name + sliceToString(arg)
-	fmt.Printf("%sRunning: %s%s%s\n", Dim, Reset +Bright + FgGreen, parts, Reset)
+	fmt.Printf("%sRunning: %s%s%s\n", util.Dim, util.Reset +util.Bright + util.FgGreen, parts, util.Reset)
 }
 
 func notifyError(text string) {
-	fmt.Printf("%s%s%s\n", FgRed, text, Reset)
+	fmt.Printf("%s%s%s\n", util.FgRed, text, util.Reset)
 }

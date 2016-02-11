@@ -3,13 +3,13 @@ package cmd
 import (
 	"github.com/codegangsta/cli"
 	"github.com/google/go-github/github"
+	"github.com/kardianos/osext"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"runtime"
+	"github.com/LastCallMedia/vagabond/util"
 )
 
 const UpdateUrl = "https://api.github.com/repos/LastCallMedia/vagabond/releases"
@@ -23,28 +23,26 @@ var CmdSelfUpdate = cli.Command{
 func runSelfUpdate(ctx *cli.Context) {
 	release, err := getRelease("latest")
 	if err != nil {
-		log.Fatalf("Unable to fetch release data")
+		util.Fatal("Unable to fetch release data")
 	}
 	filename := "vagabond_" + runtime.GOOS + "_" + runtime.GOARCH
 	asset, found := assetSearch(release.Assets, filename)
 	if !found {
-		log.Fatal("Unable to find a release asset for this OS and architecture")
-	}
-	if *asset.DownloadCount == 5 {
-		log.Print("")
+		util.Fatal("Unable to find a release asset for this OS and architecture")
 	}
 	srcfile, err := fetchAsset(asset)
 	if err != nil {
-		log.Fatalf("Failed fetching file: %s", err)
+		util.Fatalf("Failed fetching file: %s", err)
 	}
-	dstFile, err := getCurrentBinary()
+	dstFile, err := osext.Executable()
 	if err != nil {
-		log.Fatalf("Failed determining current binary: %s", err)
+		util.Fatalf("Failed determining current binary: %s", err)
 	}
 	err = copyFileOver(srcfile, dstFile)
 	if err != nil {
-		log.Fatalf("Failed replacing current binary.")
+		util.Fatalf("Failed replacing current binary.")
 	}
+	util.Successf("Replaced binary at %s", dstFile)
 }
 
 func getRelease(version string) (release *github.RepositoryRelease, err error) {
@@ -102,14 +100,5 @@ func copyFileOver(src, dst string) (err error) {
 		return
 	}
 	err = out.Sync()
-	return
-}
-
-func getCurrentBinary() (filename string, err error) {
-	filename, err = filepath.Abs(os.Args[0])
-	if err != nil {
-		return
-	}
-	_, err = os.Stat(filename)
 	return
 }

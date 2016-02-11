@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/LastCallMedia/vagabond/config"
 	"github.com/codegangsta/cli"
-	"log"
 	"os"
 	"strings"
+	"github.com/LastCallMedia/vagabond/util"
 )
 
 var CmdSetup = cli.Command{
@@ -18,7 +18,7 @@ var CmdSetup = cli.Command{
 	Flags: []cli.Flag{
 		cli.BoolFlag{
 			Name:  "force",
-			Usage: "Force the configuration actions",
+			Usage: "Force the setup actions",
 		},
 	},
 }
@@ -30,7 +30,7 @@ func runSetup(ctx *cli.Context) {
 		fmt.Println("Ensuring machine is created and booted...")
 		err := env.GetMachine().BootOrDie()
 		if err != nil {
-			log.Fatalf("Unable to boot machine: %s", err)
+			util.Fatalf("Unable to boot machine: %s", err)
 		}
 		// Reset the environment
 		env = config.NewEnvironment()
@@ -55,9 +55,9 @@ func runSetup(ctx *cli.Context) {
 		cf.Update(env, ctx.Bool("force"))
 	}
 
+	util.Success("All set")
 	if env.RequiresMachine() {
-		fmt.Printf(`
-All set. You will also need to run the following commands:
+		fmt.Printf(`You will also need to run the following commands:
 	eval $(docker-machine env %s)
 	source /etc/profile
 `, env.MachineName)
@@ -71,7 +71,7 @@ func promptQuestion(question string, def string) string {
 	input, err := reader.ReadString('\n')
 
 	if err != nil {
-		log.Fatal("Error reading input")
+		util.Fatal("Error reading input")
 	}
 	input = strings.TrimSpace(input)
 	if input == "" {
