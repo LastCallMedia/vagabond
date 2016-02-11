@@ -29,23 +29,19 @@ func runDiagnose(ctx *cli.Context) {
 	fmt.Println("Running diagnostics...")
 
 	env := config.NewEnvironment()
-	env.Check()
-
-	err := checkInstall(env)
-	if err != nil {
+	if err := env.Check(); err != nil {
 		util.Fatal(err)
 	}
-
-	err = checkConnection(env)
-	if err != nil {
+	if err := checkInstall(env); err != nil {
 		util.Fatal(err)
 	}
-	err = checkContainers(env)
-	if err != nil {
+	if err := checkConnection(env); err != nil {
 		util.Fatal(err)
 	}
-	err = checkDns(env)
-	if err != nil {
+	if err := checkContainers(env); err != nil {
+		util.Fatal(err)
+	}
+	if err := checkDns(env); err != nil {
 		util.Fatal(err)
 	}
 

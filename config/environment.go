@@ -2,11 +2,11 @@ package config
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"runtime"
 	"time"
+	"errors"
 )
 
 const (
@@ -71,23 +71,28 @@ func NewEnvironment() *Environment {
 }
 
 // Verify that environment variables are set properly
-func (e *Environment) Check() {
-	_, err := time.LoadLocation(e.Tz)
-	if err != nil {
-		log.Fatal("Invalid timezone: ", e.Tz)
+func (e *Environment) Check() error {
+	if _, err := time.LoadLocation(e.Tz); err != nil {
+		return errors.New(fmt.Sprintf("Invalid timezone: %s", e.Tz))
 	}
-	checkDir(e.SitesDir, "Sites directory")
-	checkDir(e.DataDir, "Data directory")
+	if err := checkDir(e.SitesDir, "Sites directory"); err != nil {
+		return err
+	}
+	if err := checkDir(e.DataDir, "Data directory"); err != nil {
+		return err
+	}
+	return nil
 }
 
-func checkDir(dir string, name string) {
+func checkDir(dir string, name string) error {
 	src, err := os.Stat(dir)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("%s does not exist: %s", name, dir))
+		return errors.New(fmt.Sprintf("%s does not exist: %s", name, dir))
 	}
 	if !src.IsDir() {
-		log.Fatal(fmt.Sprintf("%s is not a directory: ", name, dir))
+		return errors.New(fmt.Sprintf("%s is not a directory: ", name, dir))
 	}
+	return nil
 }
 
 // Assert whether the environment requires docker machine to run
