@@ -75,8 +75,7 @@ var ProfileConfigFile = ConfigFile{
 		TemplateName: "etcprofile",
 		Template: `export DOCKER_TZ={{.Tz}}
 export VAGABOND_SITES_DIR={{.SitesDir}}
-export VAGABOND_DATA_DIR={{.DataDir}}
-export VAGABOND_MACHINE_NAME={{.MachineName}}`,
+export VAGABOND_DATA_DIR={{.DataDir}}`,
 	},
 	Flush: func(env *Environment, filename string) {
 		exec.Command("bash", "source", "/etc/profile")
