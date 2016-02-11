@@ -131,5 +131,5 @@ func helpConnectingToDaemon(env *config.Environment) string {
 	if runtime.GOOS == "darwin" {
 		return fmt.Sprintf(`Try running "eval $(docker-machine env %s)"`, env.MachineName)
 	}
-	return "Make sure the docker service is running."
+	return "Make sure the docker service is running and that you are running this command as a user that can access it (usually root)"
 }

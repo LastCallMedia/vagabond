@@ -10,7 +10,7 @@ install:
   - go get github.com/kardianos/osext
 
 script:
-  - gox --osarch="darwin/amd64" -ldflags "-X main.Version=${TRAVIS_TAG}"
+  - gox --osarch="darwin/amd64" --osarch="linux/amd64" -ldflags "-X main.Version=${TRAVIS_TAG}"
 
 deploy:
   provider: releases
