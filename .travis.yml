@@ -7,6 +7,7 @@ install:
   - go get github.com/codegangsta/cli
   - go get github.com/mitchellh/gox
   - go get github.com/google/go-github/github
+  - go get github.com/kardianos/osext
 
 script:
   - gox --osarch="darwin/amd64" -ldflags "-X main.Version=${TRAVIS_TAG}"
