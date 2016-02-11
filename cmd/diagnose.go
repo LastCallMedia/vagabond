@@ -135,5 +135,5 @@ func helpMissingDockerCompose() string {
 	if runtime.GOOS == "darwin" {
 		return "Download and install the docker toolbox from https://www.docker.com/products/docker-toolbox"
 	}
-	return "Install docker using your package manager (https://docs.docker.com/engine/installation/)"
+	return "Download docker-compose from https://github.com/docker/compose/releases"
 }
