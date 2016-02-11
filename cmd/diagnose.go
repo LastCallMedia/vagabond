@@ -12,12 +12,6 @@ import (
 	"runtime"
 )
 
-// Help message for installing Docker
-var DockerInstallHelp = `Download and install the docker toolbox from https://www.docker.com/products/docker-toolbox`
-
-// Help message for installing Docker compose
-var DockerComposeInstallHelp = DockerInstallHelp
-
 // Tests whether setup is completed properly
 var CmdDiagnose = cli.Command{
 	Name:   "diagnose",
@@ -51,16 +45,16 @@ func runDiagnose(ctx *cli.Context) {
 func checkInstall(env *config.Environment) (err error) {
 	err = exec.Command("which", "docker").Run()
 	if err != nil {
-		return errors.New("docker is not installed. " + DockerInstallHelp)
+		return errors.New("docker is not installed. " + helpMissingDocker())
 	}
 	err = exec.Command("which", "docker-compose").Run()
 	if err != nil {
-		return errors.New("docker-compose is not installed. " + DockerComposeInstallHelp)
+		return errors.New("docker-compose is not installed. " + helpMissingDockerCompose())
 	}
 	if runtime.GOOS == "darwin" {
 		err = exec.Command("which", "docker-machine").Run()
 		if err != nil {
-			return errors.New("docker-machine is not installed. " + DockerInstallHelp)
+			return errors.New("docker-machine is not installed. " + helpMissingDocker())
 		}
 	}
 	return
@@ -128,4 +122,18 @@ func helpConnectingToDaemon(env *config.Environment) string {
 		return fmt.Sprintf(`Try running "eval $(docker-machine env %s)"`, env.MachineName)
 	}
 	return "Make sure the docker service is running and that you are running this command as a user that can access it (usually root)"
+}
+
+func helpMissingDocker() string {
+	if runtime.GOOS == "darwin" {
+		return "Download and install the docker toolbox from https://www.docker.com/products/docker-toolbox"
+	}
+	return "Install docker using your package manager (https://docs.docker.com/engine/installation/)"
+}
+
+func helpMissingDockerCompose() string {
+	if runtime.GOOS == "darwin" {
+		return "Download and install the docker toolbox from https://www.docker.com/products/docker-toolbox"
+	}
+	return "Install docker using your package manager (https://docs.docker.com/engine/installation/)"
 }
