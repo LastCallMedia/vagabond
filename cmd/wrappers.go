@@ -3,10 +3,10 @@ package cmd
 import (
 	"bytes"
 	"fmt"
+	"github.com/LastCallMedia/vagabond/util"
 	"github.com/codegangsta/cli"
 	"os"
 	"os/exec"
-	"github.com/LastCallMedia/vagabond/util"
 )
 
 var CmdUp = cli.Command{
@@ -19,9 +19,9 @@ var CmdUp = cli.Command{
 }
 
 var CmdDestroy = cli.Command{
-	Name:  "destroy",
-	Aliases: []string{"rm"},
-	Usage: "Remove one or more docker containers",
+	Name:            "destroy",
+	Aliases:         []string{"rm"},
+	Usage:           "Remove one or more docker containers",
 	SkipFlagParsing: true,
 	Action: func(ctx *cli.Context) {
 		runSimpleComposeCommand("rm", ctx.Args()...)
@@ -29,27 +29,27 @@ var CmdDestroy = cli.Command{
 }
 
 var CmdHalt = cli.Command{
-	Name:  "halt",
+	Name:    "halt",
 	Aliases: []string{"stop"},
-	Usage: "Stop one or more docker containers",
+	Usage:   "Stop one or more docker containers",
 	Action: func(ctx *cli.Context) {
 		runSimpleComposeCommand("stop", ctx.Args()...)
 	},
 }
 
 var CmdStatus = cli.Command{
-	Name: "status",
+	Name:    "status",
 	Aliases: []string{"ps"},
-	Usage: "View the status of running containers",
+	Usage:   "View the status of running containers",
 	Action: func(ctx *cli.Context) {
 		runSimpleComposeCommand("ps", ctx.Args()...)
 	},
 }
 
 var CmdSsh = cli.Command{
-	Name:  "ssh",
+	Name:    "ssh",
 	Aliases: []string{"exec"},
-	Usage: "Shell into a running docker container",
+	Usage:   "Shell into a running docker container",
 	Action: func(ctx *cli.Context) {
 		numArgs := len(ctx.Args())
 		if numArgs > 1 {
@@ -98,7 +98,7 @@ func pipeCommand(name string, arg ...string) error {
 
 func notifyCommand(name string, arg ...string) {
 	parts := name + sliceToString(arg)
-	fmt.Printf("%sRunning: %s%s%s\n", util.Dim, util.Reset +util.Bright + util.FgGreen, parts, util.Reset)
+	fmt.Printf("%sRunning: %s%s%s\n", util.Dim, util.Reset+util.Bright+util.FgGreen, parts, util.Reset)
 }
 
 func notifyError(text string) {

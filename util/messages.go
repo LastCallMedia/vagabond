@@ -5,14 +5,13 @@ import (
 	"os"
 )
 
-
 func Fatal(a ...interface{}) {
 	fmt.Print(FgRed, a, Reset, "\n")
 	os.Exit(1)
 }
 
 func Fatalf(message string, a ...interface{}) {
-	fmt.Printf(FgRed + message + Reset + "\n", a)
+	fmt.Printf(FgRed+message+Reset+"\n", a...)
 	os.Exit(1)
 }
 
@@ -21,5 +20,5 @@ func Success(a ...interface{}) {
 }
 
 func Successf(message string, a ...interface{}) {
-	fmt.Printf(FgGreen + message + Reset + "\n", a)
+	fmt.Printf(FgGreen+message+Reset+"\n", a...)
 }

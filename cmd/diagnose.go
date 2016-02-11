@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/LastCallMedia/vagabond/config"
+	"github.com/LastCallMedia/vagabond/util"
 	"github.com/codegangsta/cli"
 	"net"
 	"os/exec"
 	"runtime"
-	"github.com/LastCallMedia/vagabond/util"
 )
 
 var DockerInstallHelp = `Download and install the docker toolbox from https://www.docker.com/products/docker-toolbox`

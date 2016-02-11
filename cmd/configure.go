@@ -4,10 +4,10 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/LastCallMedia/vagabond/config"
+	"github.com/LastCallMedia/vagabond/util"
 	"github.com/codegangsta/cli"
 	"os"
 	"strings"
-	"github.com/LastCallMedia/vagabond/util"
 )
 
 var CmdSetup = cli.Command{

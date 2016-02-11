@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/LastCallMedia/vagabond/util"
 	"github.com/codegangsta/cli"
 	"github.com/google/go-github/github"
 	"github.com/kardianos/osext"
@@ -9,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"runtime"
-	"github.com/LastCallMedia/vagabond/util"
 )
 
 const UpdateUrl = "https://api.github.com/repos/LastCallMedia/vagabond/releases"
@@ -42,7 +42,7 @@ func runSelfUpdate(ctx *cli.Context) {
 	if err != nil {
 		util.Fatalf("Failed replacing current binary.")
 	}
-	util.Successf("Replaced binary at %s", dstFile)
+	util.Successf("Updated to %s (%s)", *release.TagName, dstFile)
 }
 
 func getRelease(version string) (release *github.RepositoryRelease, err error) {
