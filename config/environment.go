@@ -48,17 +48,21 @@ func NewEnvironment() *Environment {
 	if !set {
 		dataDir = vagabond_docker_data
 	}
-	machineName, set = os.LookupEnv("VAGABOND_MACHINE")
-	if !set {
-		machineName = vagabond_machine_name
-	}
 	if runtime.GOOS == "darwin" {
+		machineName, set = os.LookupEnv("VAGABOND_MACHINE")
+		if !set {
+			machineName = vagabond_machine_name
+		}
 		machine := Machine{Name: machineName}
 		if machine.IsBooted() {
 			hostIp = machine.GetHostIp()
 			machineIp = machine.GetIp()
 		}
+	} else {
+		machineIp = net.ParseIP("127.0.0.1")
+		hostIp = net.ParseIP("127.0.0.1")
 	}
+
 	return &Environment{
 		Tz:          tz,
 		SitesDir:    sitesDir,

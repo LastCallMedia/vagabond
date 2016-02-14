@@ -4,6 +4,14 @@ import(
 	"text/template"
 	"bytes"
 	"bufio"
+	"regexp"
+	"errors"
+	"fmt"
+)
+
+const (
+	autoconfig_start = "#VAGABONDAUTOCONFIG"
+	autoconfig_end   = "#VAGABONDAUTOCONFIGEND"
 )
 
 type ConfigFileAction struct {
@@ -11,7 +19,16 @@ type ConfigFileAction struct {
 	Contents []byte
 	Target	 string
 	Template *template.Template
-	ValidateCmd string
+	TemplateVars interface{}
+	Append 	bool
+}
+
+func (a ConfigFileAction) GetName() string {
+	act := "Recreating"
+	if a.Append {
+		act = "Appending to"
+	}
+	return fmt.Sprintf("%s %s", act, a.Filename)
 }
 
 func (a *ConfigFileAction) GetIo() VagabondIo {
@@ -21,28 +38,55 @@ func (a *ConfigFileAction) GetIo() VagabondIo {
 	return VagabondIoMachine{a.Target}
 }
 
-func (a *ConfigFileAction) NeedsRun() (bool, error) {
-	exists := a.GetIo().FileExists(a.Filename)
-	return !exists, nil
+func (a ConfigFileAction) NeedsRun() (bool, error) {
+	i := a.GetIo()
+	exists := i.FileExists(a.Filename)
+	if !exists {
+		return true, nil
+	}
+	existing, err := i.FileRead(a.Filename)
+	if err != nil {
+		return false, err
+	}
+	expected, err := a.getExpectedContents()
+	if err != nil {
+		return false, err
+	}
+	return !bytes.Equal(existing, expected), err
 }
 
-func (a *ConfigFileAction) Run(vars interface{}) (err error) {
-	var contents []byte
+func (a ConfigFileAction) Run() (err error) {
+	contents, err := a.getExpectedContents()
+
+	err = a.GetIo().FileWrite(a.Filename, contents)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Error writing %s: %s", a.Filename, err))
+	}
+	return
+}
+
+func (a ConfigFileAction)getExpectedContents() (contents []byte, err error) {
 	if a.Template != nil {
-		contents, err = getTemplateContents(a.Template, vars)
+		contents, err = getTemplateContents(a.Template, a.TemplateVars)
 		if err != nil {
+			err = errors.New(fmt.Sprintf("Error generating file contents for %s: %s", a.Filename, err))
 			return
 		}
 	} else {
 		contents = a.Contents
 	}
 
-	err = a.GetIo().FileWrite(a.Filename, contents)
-	if err != nil {
-		return
-	}
-	if a.ValidateCmd != "" {
-		err = a.GetIo().Exec(a.ValidateCmd)
+	i := a.GetIo()
+	if a.Append {
+		existing := []byte{}
+		if i.FileExists(a.Filename) {
+			existing, err = i.FileRead(a.Filename)
+			if err != nil {
+				err = errors.New(fmt.Sprintf("Error reading %s: %s", a.Filename, err))
+				return contents, err
+			}
+		}
+		contents = appendContents(existing, contents)
 	}
 	return
 }
@@ -57,4 +101,19 @@ func getTemplateContents(tpl *template.Template, vars interface{}) (contents []b
 	}
 	writer.Flush()
 	return buf.Bytes(), err
+}
+
+func appendContents(existing []byte, contents []byte) (newcontents []byte) {
+	re := regexp.MustCompile("(?s)" + autoconfig_start + ".*" + autoconfig_end)
+	newcontents = re.ReplaceAll(existing, []byte(""))
+	newcontents = bytes.TrimRight(newcontents, "\n")
+	if !bytes.Equal(newcontents, []byte("")) {
+		// Add a newline if this isn't going to be the first line in the file.
+		newcontents = append(newcontents, []byte("\n")...)
+	}
+
+	newcontents = append(newcontents, autoconfig_start+"\n"...)
+	newcontents = append(newcontents, contents...)
+	newcontents = append(newcontents, "\n"+autoconfig_end+"\n"...)
+	return
 }

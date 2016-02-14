@@ -4,7 +4,7 @@ import(
 )
 
 type ConfigAction interface {
+	GetName() string
 	NeedsRun() (bool, error)
-	Run(interface{}) error
+	Run() error
 }
-
