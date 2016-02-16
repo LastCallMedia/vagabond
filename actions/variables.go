@@ -3,43 +3,41 @@ import (
 	"github.com/LastCallMedia/vagabond/config"
 	"os/exec"
 	"errors"
+	"fmt"
+	"github.com/LastCallMedia/vagabond/util"
 )
 
 var VariablesTemplate = `export DOCKER_TZ={{.Tz}}
 export VAGABOND_SITES_DIR={{.SitesDir}}
 export VAGABOND_DATA_DIR={{.DataDir}}`
 
-type VariablesAction struct {
-	
-}
 
-func (act VariablesAction)GetName() string {
-	return "environment setup"
-}
+var VariablesStep = ConfigStep{
+	Name:"environment variables",
+	NeedsRun: func(envt *config.Environment) (bool) {
+		profile, err := doTemplateAppend(VariablesTemplate, envt, "/etc/profile")
+		if err != nil {
+			return true
+		}
+		matches, err := checkIfFileMatches("/etc/profile", profile)
+		if err != nil || !matches {
+			return true
+		}
+		return false
+	},
+	Run: func(envt *config.Environment) (err error) {
+		profile, err := doTemplateAppend(VariablesTemplate, envt, "/etc/profile")
+		if err != nil {
+			return
+		}
 
-func (act VariablesAction)NeedsRun(envt *config.Environment) (bool, error) {
-	profile, err := doTemplateAppend(VariablesTemplate, envt, "/etc/profile")
-	if err != nil {
-		return true, nil
-	}
-	matches, err := checkIfFileMatches("/etc/profile", profile)
-	if err != nil || !matches {
-		return true, nil
-	}
-	return false, nil
-}
-
-func (act VariablesAction)Run(envt *config.Environment) (err error) {
-	profile, err := doTemplateAppend(VariablesTemplate, envt, "/etc/profile")
-	if err != nil {
+		cmd := exec.Command("sudo", "tee", "/etc/profile")
+		pipeInputToCmd(cmd, profile)
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return errors.New(string(out))
+		}
+		fmt.Printf(util.FgYellow + "Run \"source /etc/profile\" once the setup is complete\n" + util.Reset)
 		return
-	}
-
-	cmd := exec.Command("sudo", "tee", "/etc/profile")
-	pipeInputToCmd(cmd, profile)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		return errors.New(string(out))
-	}
-	return
+	},
 }

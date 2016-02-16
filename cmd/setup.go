@@ -37,34 +37,24 @@ func runSetup(ctx *cli.Context) {
 
 	env.Check()
 
-	acts := []actions.ConfigAction{
-		actions.VariablesAction{},
+	acts := []actions.ConfigStep{
+		actions.VariablesStep,
 	}
 
 	if env.RequiresMachine() {
-		acts = append(acts, actions.MachineBootAction{})
-		acts = append(acts, actions.NfsServerAction{})
-		acts = append(acts, actions.NfsClientAction{})
+		acts = append(acts, actions.MachineStep)
+		acts = append(acts, actions.NfsServerStep)
+		acts = append(acts, actions.NfsClientStep)
 	}
-	acts = append(acts, actions.Services{})
-
-	if env.RequiresMachine() {
-		// On OSX, use resolver.
-		acts = append(acts, actions.DnsActionOsx{})
-	} else {
-		// On linux, use dhclient.
-		acts = append(acts, actions.DnsActionLinux{})
-	}
+	acts = append(acts, actions.ServicesStep)
+	acts = append(acts, actions.NewDnsAction())
 
 
 	for _, act := range acts {
-		needs, err := act.NeedsRun(env)
-		if err != nil {
-			util.Fatalf("Got error checking if %s needs to be run: %s", act.GetName(), err)
-		}
+		needs := act.NeedsRun(env)
 		if needs || force {
 			util.Successf("Running %s", act.GetName())
-			err = act.Run(env)
+			err := act.Run(env)
 			if err != nil {
 				util.Fatal(err)
 			}

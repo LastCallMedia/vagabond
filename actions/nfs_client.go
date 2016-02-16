@@ -13,45 +13,36 @@ var BootLocalTemplate = `sudo umount /Users
 		sudo mount -t nfs -o noacl,async {{.HostIp}}:{{.DataDir}} {{.DataDir}}
 `
 
+var NfsClientStep = ConfigStep{
+	Name: "nfs client",
+	NeedsRun: func(envt *config.Environment) bool {
+		machine := envt.GetMachine()
+		mountErr := machine.Exec(fmt.Sprintf("mount -t nfs|grep %s", envt.UsersDir)).Run()
+		if mountErr != nil {
+			return true
+		}
+		mountErr = machine.Exec(fmt.Sprintf("mount -t nfs|grep %s", envt.DataDir)).Run()
 
-type NfsClientAction struct {
+		return mountErr != nil
+	},
+	Run: func(envt *config.Environment) (err error) {
+		bootLocal, err := doTemplate(BootLocalTemplate, envt)
+		if err != nil {
+			return
+		}
+		machine := envt.GetMachine()
+		cmd := machine.Exec("sudo tee /var/lib/boot2docker/bootlocal.sh")
+		pipeInputToCmd(cmd, bootLocal)
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return errors.New(string(out))
+		}
 
-}
-
-func (act NfsClientAction)GetName() string {
-	return "nfs client"
-}
-
-func (act NfsClientAction)NeedsRun(envt *config.Environment) (bool, error) {
-	machine := envt.GetMachine()
-	mountErr := machine.Exec(fmt.Sprintf("mount -t nfs|grep %s", envt.UsersDir)).Run()
-	if mountErr != nil {
-		return true, nil
-	}
-	mountErr = machine.Exec(fmt.Sprintf("mount -t nfs|grep %s", envt.DataDir)).Run()
-	if mountErr != nil {
-		return true, nil
-	}
-	return false, nil
-}
-
-func (act NfsClientAction)Run(envt *config.Environment) (err error) {
-	bootLocal, err := doTemplate(BootLocalTemplate, envt)
-	if err != nil {
+		out, err = machine.Exec("sync; sudo chmod +x /var/lib/boot2docker/bootlocal.sh; sync").CombinedOutput()
+		if err != nil {
+			return errors.New(string(out))
+		}
+		err = machine.Reboot().Run()
 		return
-	}
-	machine := envt.GetMachine()
-	cmd := machine.Exec("sudo tee /var/lib/boot2docker/bootlocal.sh")
-	pipeInputToCmd(cmd, bootLocal)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		return errors.New(string(out))
-	}
-
-	out, err = machine.Exec("sync; sudo chmod +x /var/lib/boot2docker/bootlocal.sh; sync").CombinedOutput()
-	if err != nil {
-		return errors.New(string(out))
-	}
-	err = machine.Reboot().Run()
-	return
+	},
 }

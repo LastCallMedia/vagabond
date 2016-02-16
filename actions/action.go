@@ -20,6 +20,16 @@ type ConfigAction interface {
 	Run(envt *config.Environment) error
 }
 
+type ConfigStep struct {
+	Name string
+	NeedsRun func(envt *config.Environment) (bool)
+	Run func(envt *config.Environment) error
+}
+
+func (act ConfigStep)GetName() string {
+	return act.Name
+}
+
 
 func appendConfigBlock(existing []byte, block []byte) (modified []byte) {
 	re := regexp.MustCompile("(?s)" + autoconfig_start + ".*" + autoconfig_end)

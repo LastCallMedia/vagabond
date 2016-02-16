@@ -2,55 +2,57 @@ package actions
 
 import(
 	"github.com/LastCallMedia/vagabond/config"
-//	"net"
+	"runtime"
+	"net"
 	"os/exec"
 	"errors"
 	"fmt"
+	"github.com/LastCallMedia/vagabond/util"
 )
 
-type DnsAction struct {
+
+var dnsResolverStep = ConfigStep{
+	Name:"DNS",
+	NeedsRun: dnsNeedsConfigure,
+	Run: func(envt *config.Environment) (err error) {
+		err = exec.Command("sudo", "mkdir", "-p", "/etc/resolver").Run()
+		if err != nil {
+			return errors.New("Unable to create /etc/resolver")
+		}
+		cmd := exec.Command("sudo", "tee", "/etc/resolver/docker")
+		contents := []byte(fmt.Sprintf("nameserver %s", envt.MachineIp))
+		pipeInputToCmd(cmd, contents)
+		err = cmd.Run()
+		if err != nil {
+			return errors.New("Unable to write /etc/resolver/docker")
+		}
+
+		return nil
+	},
 }
 
-func (act DnsAction) GetName() string {
-	return "DNS client"
+var dnsOtherStep = ConfigStep{
+	Name: "DNS",
+	NeedsRun: dnsNeedsConfigure,
+	Run: func(envt *config.Environment) (err error) {
+		fmt.Printf(util.FgYellow + "Unable to do automatic configuration of *.docker domains.  Please point your DNS for these domains to %s\n" + util.Reset, envt.HostIp)
+		return
+	},
 }
 
-type DnsActionOsx struct {
-	DnsAction
+
+func dnsNeedsConfigure(envt *config.Environment) bool {
+	_, err := net.LookupIP("ping.docker")
+	return err != nil
 }
 
-func (act DnsActionOsx)NeedsRun(envt *config.Environment) (bool, error) {
-//	_, err := net.LookupIP("ping.docker")
-//	if err != nil {
-//		return true, nil
-//	}
-	return true, nil
-}
-
-func (act DnsActionOsx)Run(envt *config.Environment) (error) {
-	err := exec.Command("sudo", "mkdir", "-p", "/etc/resolver").Run()
-	if err != nil {
-		return errors.New("Unable to create /etc/resolver")
+func NewDnsAction() ConfigStep {
+	switch runtime.GOOS {
+	case "darwin":
+		return dnsResolverStep
+	default:
+		return dnsOtherStep
 	}
-	cmd := exec.Command("sudo", "tee", "/etc/resolver/docker")
-	contents := []byte(fmt.Sprintf("nameserver %s", envt.MachineIp))
-	pipeInputToCmd(cmd, contents)
-	err = cmd.Run()
-	if err != nil {
-		return errors.New("Unable to write /etc/resolver/docker")
-	}
-
-	return nil
 }
 
-type DnsActionLinux struct {
-	DnsAction
-}
-
-func (act DnsActionLinux)NeedsRun(envt *config.Environment) (bool, error) {
-	return true, nil
-}
-func (act DnsActionLinux)Run(envt *config.Environment) (error) {
-	return nil
-}
 

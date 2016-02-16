@@ -52,7 +52,7 @@ func (m *Machine) Scp(localFile string, remoteFile string) *exec.Cmd {
 }
 
 func (m *Machine) Create() *exec.Cmd {
-	return exec.Command("docker-machine", "create", m.Name, "-d", "virtualbox")
+	return exec.Command("docker-machine", "create", m.Name, "-d", "virtualbox", "--virtualbox-no-share")
 }
 
 func (m *Machine) Reboot() *exec.Cmd {
