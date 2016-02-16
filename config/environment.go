@@ -47,7 +47,7 @@ func NewEnvironment() *Environment {
 	dataDir, set = os.LookupEnv("VAGABOND_DATA_DIR")
 	if !set {
 		if runtime.GOOS == "darwin" {
-			dataDir = "/private/var/lib/dockerdata"
+			dataDir = os.ExpandEnv("$HOME/Library/Vagabond")
 		} else {
 			dataDir = "/var/lib/dockerdata"
 		}
