@@ -10,11 +10,11 @@ import (
 var ServicesStep = ConfigStep{
 	Name: "service containers",
 	NeedsRun: func(envt *config.Environment) bool {
-		out, err := dockerCommand(envt, "inspect vagabond_proxy").Output()
-		if err != nil || bytes.Contains(out, []byte("running")) {
+		out, err := dockerCommand(envt, "inspect -f {{.State.Status}} vagabond_proxy").Output()
+		if err != nil || !bytes.Contains(out, []byte("running")) {
 			return true
 		}
-		out, err = dockerCommand(envt, "inspect vagabond_dnsmasq").Output()
+		out, err = dockerCommand(envt, "inspect -f {{.State.Status}} vagabond_dnsmasq").Output()
 		return err != nil || !bytes.Contains(out, []byte("running"))
 	},
 	Run: func(envt *config.Environment) error {
