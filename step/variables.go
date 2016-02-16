@@ -30,7 +30,7 @@ var VariablesStep = ConfigStep{
 		if err != nil {
 			return
 		}
-
+		fmt.Println("Editing /etc/profile... sudo privileges may be required")
 		cmd := exec.Command("sudo", "tee", "/etc/profile")
 		pipeInputToCmd(cmd, profile)
 		out, err := cmd.CombinedOutput()

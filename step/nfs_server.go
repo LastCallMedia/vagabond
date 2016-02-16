@@ -22,6 +22,7 @@ var NfsServerStep = ConfigStep{
 		return err != nil || !matches
 	},
 	Run: func(envt *config.Environment) (err error) {
+		fmt.Println("Editing /etc/profile... sudo privileges may be required")
 		out, err := exec.Command("sudo", "touch", "/etc/exports").CombinedOutput()
 		if err != nil {
 			return errors.New(fmt.Sprintf("Failed to create/update exports file: %s", string(out)))
