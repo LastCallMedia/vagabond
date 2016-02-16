@@ -6,6 +6,7 @@ import (
 	"github.com/LastCallMedia/vagabond/config"
 	"github.com/LastCallMedia/vagabond/step"
 	"github.com/LastCallMedia/vagabond/util"
+	"github.com/mitchellh/go-homedir"
 	"github.com/Songmu/prompter"
 	"github.com/codegangsta/cli"
 	"os"
@@ -76,6 +77,10 @@ func runSetup(ctx *cli.Context) {
 
 func promptForDir(name string, def string) (dir string, err error) {
 	dir = prompter.Prompt(name, def)
+	dir, err = homedir.Expand(dir)
+	if err != nil {
+		return
+	}
 	exists, err := util.DirExists(dir)
 	if !exists {
 		create := prompter.YN(fmt.Sprintf("%s does not exist.  Create?", dir), false)

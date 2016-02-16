@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/LastCallMedia/vagabond/config"
 	"github.com/LastCallMedia/vagabond/util"
+	"github.com/mitchellh/go-homedir"
 	"os/exec"
 )
 
@@ -15,23 +16,30 @@ export VAGABOND_DATA_DIR={{.DataDir}}`
 var VariablesStep = ConfigStep{
 	Name: "environment variables",
 	NeedsRun: func(envt *config.Environment) bool {
-		profile, err := doTemplateAppend(profileTemplate, envt, "/etc/profile")
+		profileFilename, err := homedir.Expand("~/.profile")
+		if err != nil {
+			util.Fatal("Unable to find home directory")
+		}
+		profile, err := doTemplateAppend(profileTemplate, envt, profileFilename)
 		if err != nil {
 			return true
 		}
-		matches, err := checkIfFileMatches("/etc/profile", profile)
+		matches, err := checkIfFileMatches(profileFilename, profile)
 		if err != nil || !matches {
 			return true
 		}
 		return false
 	},
 	Run: func(envt *config.Environment) (err error) {
-		profile, err := doTemplateAppend(profileTemplate, envt, "/etc/profile")
+		profileFilename, err := homedir.Expand("~/.profile")
+		if err != nil {
+			util.Fatal("Unable to find home directory")
+		}
+		profile, err := doTemplateAppend(profileTemplate, envt, profileFilename)
 		if err != nil {
 			return
 		}
-		fmt.Println("Editing /etc/profile... sudo privileges may be required")
-		cmd := exec.Command("sudo", "tee", "/etc/profile")
+		cmd := exec.Command("tee", profileFilename)
 		pipeInputToCmd(cmd, profile)
 		out, err := cmd.CombinedOutput()
 		if err != nil {
@@ -41,3 +49,4 @@ var VariablesStep = ConfigStep{
 		return
 	},
 }
+
