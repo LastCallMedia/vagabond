@@ -1,14 +1,14 @@
 package cmd
 
 import (
-	"bufio"
 	"fmt"
 	"github.com/LastCallMedia/vagabond/config"
 	"github.com/LastCallMedia/vagabond/util"
 	"github.com/codegangsta/cli"
 	"os"
-	"strings"
 	"github.com/LastCallMedia/vagabond/step"
+	"github.com/Songmu/prompter"
+	"errors"
 )
 
 // Sets up the vagabond environment
@@ -26,17 +26,22 @@ var CmdSetup = cli.Command{
 }
 
 func runSetup(ctx *cli.Context) {
+	var err error
+
 	env := config.NewEnvironment()
 	force := ctx.Bool("force")
 
-	env.SitesDir = promptQuestion("Enter the sites directory", env.SitesDir)
-	checkDirExistsOrPrompt(env.SitesDir)
-	env.Tz = promptQuestion("Enter the timezone", env.Tz)
-	env.DataDir = promptQuestion("Enter the database storage directory", env.DataDir)
-	checkDirExistsOrPrompt(env.DataDir)
+	env.Tz = prompter.Prompt("Timezone", env.Tz)
+	env.SitesDir, err = promptForDir("Sites directory", env.SitesDir)
+	if err != nil {
+		util.Fatal(err)
+	}
+	env.DataDir, err = promptForDir("Database storage directory", env.DataDir)
+	if err != nil {
+		util.Fatal(err)
+	}
 
-	err := env.Check()
-
+	err = env.Check()
 	if err != nil {
 		util.Fatal(err)
 	}
@@ -70,33 +75,17 @@ func runSetup(ctx *cli.Context) {
 	util.Success("Setup complete")
 }
 
-func promptQuestion(question string, def string) string {
-	reader := bufio.NewReader(os.Stdin)
-
-	fmt.Printf("%s[%s]: ", question, def)
-	input, err := reader.ReadString('\n')
-
-	if err != nil {
-		util.Fatal("Error reading input")
-	}
-	input = strings.TrimSpace(input)
-	if input == "" {
-		return def
-	}
-	return input
-}
-
-func checkDirExistsOrPrompt(dir string) {
-	_, err := os.Stat(dir)
-	if err != nil && os.IsNotExist(err) {
-		create := promptQuestion(fmt.Sprintf("%s does not exist.  Do you want to create it?", dir), "N")
-		if strings.ToUpper(create) == "Y" {
+func promptForDir(name string, def string) (dir string, err error) {
+	dir = prompter.Prompt(name, def)
+	exists, err  := util.DirExists(dir)
+	if ! exists {
+		create := prompter.YN(fmt.Sprintf("%s does not exist.  Create?", dir), false)
+		if create {
 			err = os.MkdirAll(dir, 0755)
-			if err == nil {
-				return
-			}
-			util.Fatal(fmt.Sprintf("Unable to create directory %s", dir))
+			return
 		}
-		util.Fatal("Exiting")
+		err = errors.New("Did not create directory")
 	}
+	return
 }
+

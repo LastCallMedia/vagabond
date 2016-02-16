@@ -8,6 +8,7 @@ install:
   - go get github.com/mitchellh/gox
   - go get github.com/google/go-github/github
   - go get github.com/kardianos/osext
+  - go get github.com/Songmu/prompter
 
 script:
   - gox --osarch="darwin/amd64" --osarch="linux/amd64" -ldflags "-X main.Version=${TRAVIS_TAG}"
