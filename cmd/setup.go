@@ -30,8 +30,10 @@ func runSetup(ctx *cli.Context) {
 	force := ctx.Bool("force")
 
 	env.SitesDir = promptQuestion("Enter the sites directory", env.SitesDir)
+	checkDirExistsOrPrompt(env.SitesDir)
 	env.Tz = promptQuestion("Enter the timezone", env.Tz)
 	env.DataDir = promptQuestion("Enter the database storage directory", env.DataDir)
+	checkDirExistsOrPrompt(env.DataDir)
 
 	err := env.Check()
 
@@ -82,4 +84,19 @@ func promptQuestion(question string, def string) string {
 		return def
 	}
 	return input
+}
+
+func checkDirExistsOrPrompt(dir string) {
+	_, err := os.Stat(dir)
+	if err != nil && os.IsNotExist(err) {
+		create := promptQuestion(fmt.Sprintf("%s does not exist.  Do you want to create it?", dir), "N")
+		if strings.ToUpper(create) == "Y" {
+			err = os.MkdirAll(dir, 0755)
+			if err == nil {
+				return
+			}
+			util.Fatal(fmt.Sprintf("Unable to create directory %s", dir))
+		}
+		util.Fatal("Exiting")
+	}
 }
