@@ -102,19 +102,10 @@ func checkDns(env *config.Environment) error {
 		return errors.New("Unable to resolve somehost.docker. Run setup to fix DNS settings.")
 	}
 
-	if !ipSliceContains(addrs, env.MachineIp) {
+	if !util.IpSliceContains(addrs, env.MachineIp) {
 		return errors.New("somehost.docker resolves to the wrong host. Run setup to fix DNS settings.")
 	}
 	return err
-}
-
-func ipSliceContains(ips []net.IP, ip net.IP) bool {
-	for _, v := range ips {
-		if v.String() == ip.String() {
-			return true
-		}
-	}
-	return false
 }
 
 func helpConnectingToDaemon(env *config.Environment) string {

@@ -7,7 +7,7 @@ import (
 	"github.com/LastCallMedia/vagabond/util"
 )
 
-var VariablesTemplate = `export DOCKER_TZ={{.Tz}}
+var profileTemplate = `export DOCKER_TZ={{.Tz}}
 export VAGABOND_SITES_DIR={{.SitesDir}}
 export VAGABOND_DATA_DIR={{.DataDir}}`
 
@@ -15,7 +15,7 @@ export VAGABOND_DATA_DIR={{.DataDir}}`
 var VariablesStep = ConfigStep{
 	Name:"environment variables",
 	NeedsRun: func(envt *config.Environment) (bool) {
-		profile, err := doTemplateAppend(VariablesTemplate, envt, "/etc/profile")
+		profile, err := doTemplateAppend(profileTemplate, envt, "/etc/profile")
 		if err != nil {
 			return true
 		}
@@ -26,7 +26,7 @@ var VariablesStep = ConfigStep{
 		return false
 	},
 	Run: func(envt *config.Environment) (err error) {
-		profile, err := doTemplateAppend(VariablesTemplate, envt, "/etc/profile")
+		profile, err := doTemplateAppend(profileTemplate, envt, "/etc/profile")
 		if err != nil {
 			return
 		}

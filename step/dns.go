@@ -42,8 +42,8 @@ var dnsOtherStep = ConfigStep{
 
 
 func dnsNeedsConfigure(envt *config.Environment) bool {
-	_, err := net.LookupIP("ping.docker")
-	return err != nil
+	addrs, err := net.LookupIP("ping.docker")
+	return err != nil || !util.IpSliceContains(addrs, envt.MachineIp)
 }
 
 func NewDnsAction() ConfigStep {
