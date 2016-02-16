@@ -1,6 +1,8 @@
 package step
 import (
 	"github.com/LastCallMedia/vagabond/config"
+	"fmt"
+	"github.com/LastCallMedia/vagabond/util"
 )
 
 var MachineStep = ConfigStep{
@@ -19,6 +21,7 @@ var MachineStep = ConfigStep{
 		}
 		if ! machine.IsBooted() {
 			err = machine.Boot().Run()
+			fmt.Printf(util.FgYellow + "Run the following command once the setup is complete:\n\teval $(docker-machine env %s)\n" + util.Reset, envt.MachineName)
 		}
 		newEvt := config.NewEnvironment()
 		// Copy over the IPs after the machine boots.
