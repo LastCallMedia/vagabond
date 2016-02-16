@@ -17,19 +17,20 @@ const (
 
 // Representation of the vagabond environment settings.
 type Environment struct {
-	Tz          string
-	SitesDir    string
-	DataDir     string
-	MachineName string
-	HostIp      net.IP
-	MachineIp   net.IP
-	UsersDir    string
+	Tz             string
+	SitesDir       string
+	DataDir        string
+	MachineName    string
+	DockerClientIp net.IP
+	DockerDaemonIp net.IP
+	UsersDir       string
 }
 
 // Create and prepopulate a new environment based on settings
 func NewEnvironment() *Environment {
 	var sitesDir, dataDir, tz, machineName string
-	var hostIp, machineIp net.IP
+	clientIp := net.ParseIP("127.0.0.1")
+	daemonIp := net.ParseIP("127.0.0.1")
 
 	tz, set := os.LookupEnv("DOCKER_TZ")
 	if !set {
@@ -49,18 +50,12 @@ func NewEnvironment() *Environment {
 		dataDir = vagabond_docker_data
 	}
 	if runtime.GOOS == "darwin" {
-		machineName, set = os.LookupEnv("VAGABOND_MACHINE")
-		if !set {
-			machineName = vagabond_machine_name
-		}
+		machineName = vagabond_machine_name
 		machine := Machine{Name: machineName}
 		if machine.IsBooted() {
-			hostIp = machine.GetHostIp()
-			machineIp = machine.GetIp()
+			clientIp = machine.GetHostIp()
+			daemonIp = machine.GetIp()
 		}
-	} else {
-		machineIp = net.ParseIP("127.0.0.1")
-		hostIp = net.ParseIP("127.0.0.1")
 	}
 
 	return &Environment{
@@ -68,8 +63,8 @@ func NewEnvironment() *Environment {
 		SitesDir:    sitesDir,
 		DataDir:     dataDir,
 		MachineName: machineName,
-		MachineIp:   machineIp,
-		HostIp:      hostIp,
+		DockerDaemonIp:   daemonIp,
+		DockerClientIp:      clientIp,
 		UsersDir:    "/Users",
 	}
 }

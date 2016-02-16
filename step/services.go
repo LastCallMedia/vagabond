@@ -23,7 +23,7 @@ var ServicesStep = ConfigStep{
 		if out, err := cmd.Output(); err != nil {
 			return errors.New(string(out))
 		}
-		cmd = dockerCommand(envt, fmt.Sprintf("run --name vagabond_dnsmasq -d -p 53:53/udp -p 53:53/tcp --cap-add NET_ADMIN andyshinn/dnsmasq --address=/docker/%s", envt.MachineIp))
+		cmd = dockerCommand(envt, fmt.Sprintf("run --name vagabond_dnsmasq -d -p 53:53/udp -p 53:53/tcp --cap-add NET_ADMIN andyshinn/dnsmasq --address=/docker/%s", envt.DockerDaemonIp))
 		if out, err := cmd.Output(); err != nil {
 			return errors.New(string(out))
 		}

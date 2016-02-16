@@ -7,8 +7,8 @@ import(
 	"fmt"
 )
 
-var ExportsTemplate = `{{.UsersDir}} {{.MachineIp}} -alldirs -mapall=501:20
-{{.DataDir}} {{.MachineIp}} -alldirs -maproot=0`
+var ExportsTemplate = `{{.UsersDir}} {{.DockerDaemonIp}} -alldirs -mapall=501:20
+{{.DataDir}} {{.DockerDaemonIp}} -alldirs -maproot=0`
 
 var NfsServerStep = ConfigStep{
 	Name: "nfs server",

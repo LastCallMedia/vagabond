@@ -9,8 +9,8 @@ var BootLocalTemplate = `#!/bin/bash
 	sudo mkdir -p /Users
 	sudo mkdir -p {{.DataDir}}
 	sudo /usr/local/etc/init.d/nfs-client start
-		sudo mount -t nfs -o noacl,async {{.HostIp}}:{{.UsersDir}} {{.UsersDir}}
-		sudo mount -t nfs -o noacl,async {{.HostIp}}:{{.DataDir}} {{.DataDir}}
+		sudo mount -t nfs -o noacl,async {{.DockerClientIp}}:{{.UsersDir}} {{.UsersDir}}
+		sudo mount -t nfs -o noacl,async {{.DockerClientIp}}:{{.DataDir}} {{.DataDir}}
 `
 
 var NfsClientStep = ConfigStep{

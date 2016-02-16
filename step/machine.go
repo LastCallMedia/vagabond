@@ -22,8 +22,8 @@ var MachineStep = ConfigStep{
 		}
 		newEvt := config.NewEnvironment()
 		// Copy over the IPs after the machine boots.
-		envt.MachineIp = newEvt.MachineIp
-		envt.HostIp = newEvt.HostIp
+		envt.DockerDaemonIp = newEvt.DockerDaemonIp
+		envt.DockerClientIp = newEvt.DockerClientIp
 		return
 	},
 }
