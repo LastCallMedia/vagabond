@@ -33,7 +33,11 @@ func runSetup(ctx *cli.Context) {
 	env.Tz = promptQuestion("Enter the timezone", env.Tz)
 	env.DataDir = promptQuestion("Enter the database storage directory", env.DataDir)
 
-	env.Check()
+	err := env.Check()
+
+	if err != nil {
+		util.Fatal(err)
+	}
 
 	acts := []step.ConfigStep{
 		step.VariablesStep,
