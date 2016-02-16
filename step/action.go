@@ -1,4 +1,4 @@
-package actions
+package step
 import(
 	"github.com/LastCallMedia/vagabond/config"
 	"regexp"

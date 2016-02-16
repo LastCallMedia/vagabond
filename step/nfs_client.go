@@ -1,11 +1,11 @@
-package actions
+package step
 import(
 	"github.com/LastCallMedia/vagabond/config"
 	"fmt"
 	"errors"
 )
 
-var BootLocalTemplate = `sudo umount /Users
+var BootLocalTemplate = `#!/bin/bash
 	sudo mkdir -p /Users
 	sudo mkdir -p {{.DataDir}}
 	sudo /usr/local/etc/init.d/nfs-client start

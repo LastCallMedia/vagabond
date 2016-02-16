@@ -1,7 +1,6 @@
-package actions
+package step
 import (
 	"github.com/LastCallMedia/vagabond/config"
-	"os"
 )
 
 var MachineStep = ConfigStep{
