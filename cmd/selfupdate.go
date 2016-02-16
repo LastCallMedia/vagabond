@@ -35,7 +35,7 @@ func runSelfUpdate(ctx *cli.Context) {
 	filename := "vagabond_" + runtime.GOOS + "_" + runtime.GOARCH
 	asset, found := assetSearch(release.Assets, filename)
 	if !found {
-		util.Fatal("Unable to find a release asset for this OS and architecture")
+		util.Fatal("Unable to find a release asset for this OS and architecture.  Expected to find " + filename)
 	}
 	srcfile, err := fetchAsset(asset)
 	if err != nil {
