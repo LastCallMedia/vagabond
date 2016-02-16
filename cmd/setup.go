@@ -6,9 +6,9 @@ import (
 	"github.com/LastCallMedia/vagabond/config"
 	"github.com/LastCallMedia/vagabond/step"
 	"github.com/LastCallMedia/vagabond/util"
-	"github.com/mitchellh/go-homedir"
 	"github.com/Songmu/prompter"
 	"github.com/codegangsta/cli"
+	"github.com/mitchellh/go-homedir"
 	"os"
 )
 

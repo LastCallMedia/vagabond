@@ -5,10 +5,10 @@ import (
 	"bytes"
 	"github.com/LastCallMedia/vagabond/config"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"regexp"
 	"text/template"
-	"os"
 )
 
 const (
