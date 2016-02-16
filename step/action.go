@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"regexp"
 	"text/template"
+	"os"
 )
 
 const (
@@ -54,6 +55,11 @@ func doTemplateAppend(tplString string, data interface{}, filename string) (out 
 		return
 	}
 	existing, err := ioutil.ReadFile(filename)
+	// It's ok if this file doesn't exist yet.
+	if err != nil && os.IsNotExist(err) {
+		existing = []byte{}
+		err = nil
+	}
 	out = appendConfigBlock(existing, addition)
 	return
 }
