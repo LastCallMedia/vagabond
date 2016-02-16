@@ -61,13 +61,7 @@ func runSetup(ctx *cli.Context) {
 		}
 	}
 
-	util.Success("All set")
-	if env.RequiresMachine() {
-		fmt.Printf(`You will also need to run the following commands:
-	eval $(docker-machine env %s)
-	source /etc/profile
-`, env.MachineName)
-	}
+	util.Success("Setup complete")
 }
 
 func promptQuestion(question string, def string) string {
