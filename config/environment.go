@@ -7,6 +7,7 @@ import (
 	"os"
 	"runtime"
 	"time"
+	"github.com/mitchellh/go-homedir"
 )
 
 const (
@@ -38,7 +39,7 @@ func NewEnvironment() *Environment {
 	sitesDir, set = os.LookupEnv("VAGABOND_SITES_DIR")
 	if !set {
 		if runtime.GOOS == "darwin" {
-			sitesDir = os.ExpandEnv("$HOME/Sites")
+			sitesDir = homedir.Expand("~/Sites")
 		} else {
 			sitesDir = "/var/www"
 		}
