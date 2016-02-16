@@ -16,7 +16,7 @@ export VAGABOND_DATA_DIR={{.DataDir}}`
 var VariablesStep = ConfigStep{
 	Name: "environment variables",
 	NeedsRun: func(envt *config.Environment) bool {
-		profileFilename, err := homedir.Expand("~/.profile")
+		profileFilename, err := homedir.Expand("~/.bash_profile")
 		if err != nil {
 			util.Fatal("Unable to find home directory")
 		}
@@ -31,7 +31,7 @@ var VariablesStep = ConfigStep{
 		return false
 	},
 	Run: func(envt *config.Environment) (err error) {
-		profileFilename, err := homedir.Expand("~/.profile")
+		profileFilename, err := homedir.Expand("~/.bash_profile")
 		if err != nil {
 			util.Fatal("Unable to find home directory")
 		}
