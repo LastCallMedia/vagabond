@@ -11,7 +11,7 @@ import (
 
 const (
 	vagabond_tz           string = "America/New_York"
-	vagabond_docker_data  string = "/var/lib/dockerdata"
+	vagabond_docker_data  string = "/private/var/lib/dockerdata"
 	vagabond_machine_name string = "vagabond"
 )
 

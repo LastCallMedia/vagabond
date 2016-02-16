@@ -10,6 +10,7 @@ import (
 	"strings"
 	"github.com/LastCallMedia/vagabond/cfg"
 	"text/template"
+	"github.com/LastCallMedia/vagabond/actions"
 )
 
 // Sets up the vagabond environment
@@ -30,48 +31,45 @@ func runSetup(ctx *cli.Context) {
 	env := config.NewEnvironment()
 	force := ctx.Bool("force")
 
-	if env.RequiresMachine() {
-		fmt.Println("Ensuring machine is created and booted...")
-		err := env.GetMachine().BootOrDie()
-		if err != nil {
-			util.Fatalf("Unable to boot machine: %s", err)
-		}
-		// Reset the environment
-		env = config.NewEnvironment()
-	}
-
 	env.SitesDir = promptQuestion("Enter the sites directory", env.SitesDir)
 	env.Tz = promptQuestion("Enter the timezone", env.Tz)
 	env.DataDir = promptQuestion("Enter the database storage directory", env.DataDir)
 
 	env.Check()
 
-	actions := []cfg.ConfigAction{}
+	acts := []actions.ConfigAction{
+		actions.VariablesAction{},
+	}
 
 	if env.RequiresMachine() {
-		actions = append(actions, nfsExportsActions(env)...)
-		actions = append(actions, bootLocalActions(env)...)
-		// On osx, use resolver files.
-		actions = append(actions, resolverActions(env)...)
-	} else {
-		// On linux, use dhclient
-//		coll = append(coll, config.DhclientConfigFile)
+		acts = append(acts, actions.MachineBootAction{})
+		acts = append(acts, actions.NfsServerAction{})
+		acts = append(acts, actions.NfsClientAction{})
 	}
-	actions = append(actions, etcProfileAction(env))
-	actions = append(actions, containerServiceActions(env)...)
+	acts = append(acts, actions.Services{})
+
+	if env.RequiresMachine() {
+		// On OSX, use resolver.
+		acts = append(acts, actions.DnsActionOsx{})
+	} else {
+		// On linux, use dhclient.
+		acts = append(acts, actions.DnsActionLinux{})
+	}
 
 
-	for _, action := range actions {
-		needs, err := action.NeedsRun()
+	for _, act := range acts {
+		needs, err := act.NeedsRun(env)
 		if err != nil {
-			util.Fatalf("Got error checking if %s needs to be run: %s", action.GetName(), err)
+			util.Fatalf("Got error checking if %s needs to be run: %s", act.GetName(), err)
 		}
 		if needs || force {
-			util.Successf("Running %s", action.GetName())
-			err = action.Run()
+			util.Successf("Running %s", act.GetName())
+			err = act.Run(env)
 			if err != nil {
 				util.Fatal(err)
 			}
+		} else {
+			util.Successf("Skipping %s", act.GetName())
 		}
 	}
 
