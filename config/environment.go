@@ -1,12 +1,12 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"os"
 	"runtime"
 	"time"
-	"errors"
 )
 
 const (
@@ -62,13 +62,13 @@ func NewEnvironment() *Environment {
 	}
 
 	return &Environment{
-		Tz:          tz,
-		SitesDir:    sitesDir,
-		DataDir:     dataDir,
-		MachineName: machineName,
-		DockerDaemonIp:   daemonIp,
-		DockerClientIp:      clientIp,
-		UsersDir:    "/Users",
+		Tz:             tz,
+		SitesDir:       sitesDir,
+		DataDir:        dataDir,
+		MachineName:    machineName,
+		DockerDaemonIp: daemonIp,
+		DockerClientIp: clientIp,
+		UsersDir:       "/Users",
 	}
 }
 

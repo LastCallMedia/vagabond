@@ -1,10 +1,11 @@
 package step
+
 import (
+	"bytes"
+	"errors"
+	"fmt"
 	"github.com/LastCallMedia/vagabond/config"
 	"os/exec"
-	"fmt"
-	"errors"
-	"bytes"
 )
 
 var ServicesStep = ConfigStep{
@@ -40,4 +41,3 @@ func dockerCommand(envt *config.Environment, command string) (cmd *exec.Cmd) {
 	}
 	return
 }
-

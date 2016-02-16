@@ -1,14 +1,14 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"github.com/LastCallMedia/vagabond/config"
+	"github.com/LastCallMedia/vagabond/step"
 	"github.com/LastCallMedia/vagabond/util"
+	"github.com/Songmu/prompter"
 	"github.com/codegangsta/cli"
 	"os"
-	"github.com/LastCallMedia/vagabond/step"
-	"github.com/Songmu/prompter"
-	"errors"
 )
 
 // Sets up the vagabond environment
@@ -58,7 +58,6 @@ func runSetup(ctx *cli.Context) {
 	acts = append(acts, step.ServicesStep)
 	acts = append(acts, step.NewDnsAction())
 
-
 	for _, act := range acts {
 		needs := act.NeedsRun(env)
 		if needs || force {
@@ -77,8 +76,8 @@ func runSetup(ctx *cli.Context) {
 
 func promptForDir(name string, def string) (dir string, err error) {
 	dir = prompter.Prompt(name, def)
-	exists, err  := util.DirExists(dir)
-	if ! exists {
+	exists, err := util.DirExists(dir)
+	if !exists {
 		create := prompter.YN(fmt.Sprintf("%s does not exist.  Create?", dir), false)
 		if create {
 			err = os.MkdirAll(dir, 0755)
@@ -88,4 +87,3 @@ func promptForDir(name string, def string) (dir string, err error) {
 	}
 	return
 }
-

@@ -1,10 +1,10 @@
 package util
 
-import(
-	"net"
-	"os"
+import (
 	"errors"
 	"fmt"
+	"net"
+	"os"
 )
 
 func IpSliceContains(ips []net.IP, ip net.IP) bool {
@@ -24,6 +24,8 @@ func DirExists(path string) (bool, error) {
 		}
 		return false, errors.New(fmt.Sprintf("Exists, but not a directory %s", path))
 	}
-	if os.IsNotExist(err) { return false, nil }
+	if os.IsNotExist(err) {
+		return false, nil
+	}
 	return true, nil
 }

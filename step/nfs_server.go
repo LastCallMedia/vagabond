@@ -1,10 +1,10 @@
 package step
 
-import(
-	"github.com/LastCallMedia/vagabond/config"
-	"os/exec"
+import (
 	"errors"
 	"fmt"
+	"github.com/LastCallMedia/vagabond/config"
+	"os/exec"
 )
 
 var ExportsTemplate = `{{.UsersDir}} {{.DockerDaemonIp}} -alldirs -mapall=501:20
@@ -48,4 +48,3 @@ var NfsServerStep = ConfigStep{
 		return
 	},
 }
-

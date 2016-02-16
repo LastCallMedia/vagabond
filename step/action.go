@@ -1,12 +1,13 @@
 package step
-import(
-	"github.com/LastCallMedia/vagabond/config"
-	"regexp"
-	"bytes"
-	"text/template"
+
+import (
 	"bufio"
-	"os/exec"
+	"bytes"
+	"github.com/LastCallMedia/vagabond/config"
 	"io/ioutil"
+	"os/exec"
+	"regexp"
+	"text/template"
 )
 
 const (
@@ -15,15 +16,14 @@ const (
 )
 
 type ConfigStep struct {
-	Name string
-	NeedsRun func(envt *config.Environment) (bool)
-	Run func(envt *config.Environment) error
+	Name     string
+	NeedsRun func(envt *config.Environment) bool
+	Run      func(envt *config.Environment) error
 }
 
-func (act ConfigStep)GetName() string {
+func (act ConfigStep) GetName() string {
 	return act.Name
 }
-
 
 func appendConfigBlock(existing []byte, block []byte) (modified []byte) {
 	re := regexp.MustCompile("(?s)" + autoconfig_start + ".*" + autoconfig_end)

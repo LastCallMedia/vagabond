@@ -1,20 +1,20 @@
 package step
+
 import (
-	"github.com/LastCallMedia/vagabond/config"
-	"os/exec"
 	"errors"
 	"fmt"
+	"github.com/LastCallMedia/vagabond/config"
 	"github.com/LastCallMedia/vagabond/util"
+	"os/exec"
 )
 
 var profileTemplate = `export DOCKER_TZ={{.Tz}}
 export VAGABOND_SITES_DIR={{.SitesDir}}
 export VAGABOND_DATA_DIR={{.DataDir}}`
 
-
 var VariablesStep = ConfigStep{
-	Name:"environment variables",
-	NeedsRun: func(envt *config.Environment) (bool) {
+	Name: "environment variables",
+	NeedsRun: func(envt *config.Environment) bool {
 		profile, err := doTemplateAppend(profileTemplate, envt, "/etc/profile")
 		if err != nil {
 			return true

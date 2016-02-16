@@ -1,18 +1,17 @@
 package step
 
-import(
-	"github.com/LastCallMedia/vagabond/config"
-	"runtime"
-	"net"
-	"os/exec"
+import (
 	"errors"
 	"fmt"
+	"github.com/LastCallMedia/vagabond/config"
 	"github.com/LastCallMedia/vagabond/util"
+	"net"
+	"os/exec"
+	"runtime"
 )
 
-
 var dnsResolverStep = ConfigStep{
-	Name:"DNS",
+	Name:     "DNS",
 	NeedsRun: dnsNeedsConfigure,
 	Run: func(envt *config.Environment) (err error) {
 		err = exec.Command("sudo", "mkdir", "-p", "/etc/resolver").Run()
@@ -32,14 +31,13 @@ var dnsResolverStep = ConfigStep{
 }
 
 var dnsOtherStep = ConfigStep{
-	Name: "DNS",
+	Name:     "DNS",
 	NeedsRun: dnsNeedsConfigure,
 	Run: func(envt *config.Environment) (err error) {
-		fmt.Printf(util.FgYellow + "Unable to do automatic configuration of *.docker domains.  Please point your DNS for these domains to %s\n" + util.Reset, envt.DockerClientIp)
+		fmt.Printf(util.FgYellow+"Unable to do automatic configuration of *.docker domains.  Please point your DNS for these domains to %s\n"+util.Reset, envt.DockerClientIp)
 		return
 	},
 }
-
 
 func dnsNeedsConfigure(envt *config.Environment) bool {
 	addrs, err := net.LookupIP("ping.docker")
@@ -54,5 +52,3 @@ func NewDnsAction() ConfigStep {
 		return dnsOtherStep
 	}
 }
-
-

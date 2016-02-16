@@ -1,8 +1,9 @@
 package step
-import(
-	"github.com/LastCallMedia/vagabond/config"
-	"fmt"
+
+import (
 	"errors"
+	"fmt"
+	"github.com/LastCallMedia/vagabond/config"
 )
 
 var BootLocalTemplate = `#!/bin/bash
