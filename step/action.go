@@ -14,12 +14,6 @@ const (
 	autoconfig_end   = "#VAGABONDAUTOCONFIGEND"
 )
 
-type ConfigAction interface {
-	GetName() string
-	NeedsRun(envt *config.Environment) (bool, error)
-	Run(envt *config.Environment) error
-}
-
 type ConfigStep struct {
 	Name string
 	NeedsRun func(envt *config.Environment) (bool)
