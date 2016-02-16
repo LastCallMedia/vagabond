@@ -11,7 +11,6 @@ import (
 
 const (
 	vagabond_tz           string = "America/New_York"
-	vagabond_docker_data  string = "/private/var/lib/dockerdata"
 	vagabond_machine_name string = "vagabond"
 )
 
@@ -47,7 +46,11 @@ func NewEnvironment() *Environment {
 
 	dataDir, set = os.LookupEnv("VAGABOND_DATA_DIR")
 	if !set {
-		dataDir = vagabond_docker_data
+		if runtime.GOOS == "darwin" {
+			dataDir = "/private/var/lib/dockerdata"
+		} else {
+			dataDir = "/var/lib/dockerdata"
+		}
 	}
 	if runtime.GOOS == "darwin" {
 		machineName = vagabond_machine_name
