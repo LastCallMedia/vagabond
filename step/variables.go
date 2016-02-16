@@ -45,7 +45,7 @@ var VariablesStep = ConfigStep{
 		if err != nil {
 			return errors.New(string(out))
 		}
-		fmt.Printf(util.FgYellow + "Run the following command once the setup is complete:\n\tsource /etc/profile\n" + util.Reset)
+		fmt.Printf(util.FgYellow + fmt.Sprintf("Run the following command once the setup is complete:\n\tsource %s\n", profileFilename) + util.Reset)
 		return
 	},
 }
