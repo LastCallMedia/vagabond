@@ -1,7 +1,7 @@
 Vagabond Development Environment
 ================================
 
-This is a development tool to help in setting up a docker powered development stack.  It was built to help Last Call Media transition from a Vagrant development stack to a Docker one.  It's mostly useful for OSX users, although Linux users might eventually find it helpful too.
+Vagabond Development Environment is brought to you by your friends at [Last Call Media](https://www.lastcallmedia.com), this is a development tool to help in setting up a docker powered development stack.  It was built to help Last Call Media transition from a Vagrant development stack to a Docker one.  It's mostly useful for OSX users, although Linux users might eventually find it helpful too.
 
 It assumes the following:
 
